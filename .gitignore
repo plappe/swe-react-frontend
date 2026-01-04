@@ -416,3 +416,19 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+
+# Node modules
+node_modules/
+
+# Build output
+dist/
+
+# Playwright
+playwright-report/
+test-results/
+
+# SSL Certs
+docker/certs/

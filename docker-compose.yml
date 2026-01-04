@@ -1,0 +1,62 @@
+# ==============================================================
+# Docker Compose für lokale Entwicklung
+# ==============================================================
+# Startet den Frontend-Container mit HTTPS
+#
+# Verwendung:
+#   docker compose up -d        # Container starten
+#   docker compose down         # Container stoppen
+#   docker compose logs -f      # Logs anzeigen
+#   docker compose build        # Image neu bauen
+
+services:
+  # Frontend Service
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Build-Argumente für Vite Umgebungsvariablen
+      args:
+        VITE_GRAPHQL_URI: https://localhost:3000/graphql
+        VITE_KEYCLOAK_URL: https://localhost:8443
+        VITE_KEYCLOAK_REALM: acme
+        VITE_KEYCLOAK_CLIENT_ID: buch-frontend
+    
+    # Container-Name
+    container_name: buch-frontend
+    
+    # Ports: Host:Container
+    ports:
+      - "80:80"      # HTTP (wird zu HTTPS umgeleitet)
+      - "443:443"    # HTTPS
+    
+    # SSL-Zertifikate mounten
+    # Die Zertifikate müssen im docker/certs/ Verzeichnis liegen
+    volumes:
+      - ./docker/certs:/etc/nginx/ssl:ro
+    
+    # Umgebungsvariablen
+    environment:
+      - TZ=Europe/Berlin
+    
+    # Container automatisch neustarten
+    restart: unless-stopped
+    
+    # Netzwerk für Kommunikation mit anderen Containern
+    networks:
+      - buch-network
+    
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+# Netzwerk-Definition
+networks:
+  buch-network:
+    driver: bridge
+    # Wenn das Backend auch in Docker läuft, gleiches Netzwerk verwenden:
+    # external: true

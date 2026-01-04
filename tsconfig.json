@@ -1,0 +1,84 @@
+{
+    "compilerOptions": {
+        /* ============================================
+         * TypeScript Compiler Options
+         * Diese Optionen steuern, wie TypeScript Code kompiliert wird
+         * ============================================ */
+
+        // Ziel-JavaScript-Version (ES2023 für moderne Browser)
+        "target": "ES2023",
+
+        // Welche JavaScript-APIs verfügbar sind
+        // DOM = Browser APIs (document, window, etc.)
+        // DOM.Iterable = for...of loops auf DOM collections
+        // ES2023 = moderne JS Features (Array.at(), Object.hasOwn(), etc.)
+        "lib": ["DOM", "DOM.Iterable", "ES2023"],
+
+        // Typ-Definitionen für Node.js APIs (benötigt für Playwright tests und vite.config.ts)
+        "types": ["node"],
+
+        // Module System: ESNext für native ES Modules
+        "module": "ESNext",
+
+        // Wie Module aufgelöst werden (bundler = optimiert für Vite/Webpack)
+        "moduleResolution": "bundler",
+
+        /* ============================================
+         * React/JSX Konfiguration
+         * ============================================ */
+
+        // react-jsx: Automatischer React Import (kein "import React" nötig)
+        "jsx": "react-jsx",
+
+        /* ============================================
+         * Strikte Typ-Prüfung
+         * ============================================ */
+
+        // Aktiviert alle strikten Typ-Checks
+        "strict": true,
+
+        // Keine ungenutzten lokalen Variablen
+        "noUnusedLocals": true,
+
+        // Keine ungenutzten Parameter
+        "noUnusedParameters": true,
+
+        // Verhindert implizites any bei unvollständigen switch-cases
+        "noFallthroughCasesInSwitch": true,
+
+        // Erzwingt korrekte Typisierung bei nicht initialisiertem Code
+        "noUncheckedIndexedAccess": true,
+
+        /* ============================================
+         * Module & Imports
+         * ============================================ */
+
+        // Ermöglicht JSON-Imports: import data from './data.json'
+        "resolveJsonModule": true,
+
+        // Isoliert jede Datei als eigenes Modul (wichtig für Vite)
+        "isolatedModules": true,
+
+        // Ermöglicht: import React from 'react' statt import * as React from 'react'
+        "esModuleInterop": true,
+
+        // Erlaubt JS-Dateien neben TS-Dateien
+        "allowJs": true,
+
+        /* ============================================
+         * Build-Optionen
+         * ============================================ */
+
+        // TypeScript prüft nur, kompiliert nicht (Vite macht das)
+        "noEmit": true,
+
+        // Überspringe Typ-Prüfung für node_modules (schneller)
+        "skipLibCheck": true
+    },
+
+    // Welche Dateien TypeScript prüfen soll
+    "include": ["src/**/*", "vite.config.ts", "tests/**/*"],
+
+    // Welche Dateien ignoriert werden
+    "exclude": ["node_modules", "dist"]
+}

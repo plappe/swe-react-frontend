@@ -1,0 +1,12 @@
+# Ignoriert werden:
+node_modules
+dist
+.git
+.gitignore
+*.md
+playwright-report
+test-results
+coverage
+.env.local
+.env.*.local
+docker/certs

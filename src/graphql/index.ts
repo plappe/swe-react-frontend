@@ -1,0 +1,7 @@
+/**
+ * Zentrale Export-Datei für GraphQL
+ */
+
+export { apolloClient } from './client';
+export * from './queries';
+export * from './mutations';

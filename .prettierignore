@@ -1,0 +1,11 @@
+# Prettier ignoriert diese Dateien
+# (automatisch generierte oder Build-Dateien)
+
+dist/
+node_modules/
+pnpm-lock.yaml
+playwright-report/
+test-results/
+coverage/
+*.min.js
+*.min.css

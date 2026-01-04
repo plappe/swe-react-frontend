@@ -1,0 +1,22 @@
+<!-- 
+  Silent Check SSO HTML
+  
+  Diese Datei wird von Keycloak für den "Silent Check SSO" verwendet.
+  Sie lädt im Hintergrund (in einem versteckten iframe) und prüft
+  ob der Benutzer bereits bei Keycloak eingeloggt ist.
+  
+  Das Ergebnis wird an die Hauptanwendung zurückgemeldet.
+-->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Silent Check SSO</title>
+</head>
+<body>
+    <script>
+        // Weiterleitung des Auth-Ergebnisses an das Parent-Window
+        parent.postMessage(location.href, location.origin);
+    </script>
+</body>
+</html>
