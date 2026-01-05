@@ -17,6 +17,7 @@ import { LoginPage } from './pages/LoginPage';
 import { SearchPage } from './pages/SearchPage';
 import { DetailPage } from './pages/DetailPage';
 import { CreatePage } from './pages/CreatePage';
+import { CreateBookPage } from './pages/CreateBookPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Geschützte Route Komponente
@@ -54,6 +55,9 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    
+                    {/* Admin-Route - nur für Admins */}
+                    <Route path="/buch-erstellen" element={<CreateBookPage />} />
 
                     {/* 404 - Seite nicht gefunden */}
                     <Route path="*" element={<NotFoundPage />} />

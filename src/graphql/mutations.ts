@@ -15,13 +15,12 @@ import { BUCH_FRAGMENT } from './queries';
  * Mutation: Neues Buch erstellen
  *
  * Input-Typen werden mit "Input" Suffix benannt (Konvention).
- * Die Mutation gibt das erstellte Buch zurück.
+ * Die Mutation gibt nur die ID zurück (CreatePayload).
  */
 export const ERSTELLE_BUCH = gql`
-    ${BUCH_FRAGMENT}
     mutation ErstelleBuch($input: BuchInput!) {
         create(input: $input) {
-            ...BuchFields
+            id
         }
     }
 `;

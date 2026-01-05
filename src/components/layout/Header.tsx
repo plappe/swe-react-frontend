@@ -20,7 +20,8 @@ import { LoginButton } from './LoginButton';
  * - Login/User-Menü je nach Auth-Status
  */
 export function Header() {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
+    const isAdmin = isAuthenticated && user?.roles?.includes('admin');
 
     return (
         <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
@@ -43,6 +44,12 @@ export function Header() {
                         <Nav.Link as={NavLink} to="/suche">
                             Suche
                         </Nav.Link>
+                        {/* "Neues Buch" nur für Admins */}
+                        {isAdmin && (
+                            <Nav.Link as={NavLink} to="/buch-erstellen">
+                                Buch erstellen
+                            </Nav.Link>
+                        )}
                         {/* "Neu anlegen" nur für eingeloggte Benutzer */}
                         {isAuthenticated && (
                             <Nav.Link as={NavLink} to="/neu">
