@@ -30,10 +30,7 @@ export const BUCH_FRAGMENT = gql`
         datum
         homepage
         schlagwoerter
-        erzeugt
-        aktualisiert
         titel {
-            id
             titel
             untertitel
         }
@@ -43,16 +40,13 @@ export const BUCH_FRAGMENT = gql`
 /**
  * Query: Alle Bücher suchen
  *
- * Unterstützt:
- * - Filterung nach Suchkriterien
- * - Pagination mit first/after (Cursor-based)
- *
- * $suchkriterien ist eine Variable die beim Query-Aufruf übergeben wird
+ * Unterstützt Filterung nach Suchkriterien
+ * Backend limitiert auf 5 Bücher (DEFAULT_PAGE_SIZE)
  */
 export const SUCHE_BUECHER = gql`
     ${BUCH_FRAGMENT}
-    query SucheBuecher($suchkriterien: SuchkriterienInput) {
-        buecher(suchkriterien: $suchkriterien) {
+    query SucheBuecher($suchparameter: SuchparameterInput) {
+        buecher(suchparameter: $suchparameter) {
             ...BuchFields
         }
     }
@@ -86,7 +80,7 @@ export const FINDE_BUCH_BY_ID = gql`
 export const FINDE_BUCH_BY_ISBN = gql`
     ${BUCH_FRAGMENT}
     query FindeBuchByIsbn($isbn: String!) {
-        buecher(suchkriterien: { isbn: $isbn }) {
+        buecher(suchparameter: { isbn: $isbn }) {
             ...BuchFields
         }
     }
