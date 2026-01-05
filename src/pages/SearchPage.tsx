@@ -37,7 +37,7 @@ export function SearchPage() {
     // Form state
     const [isbn, setIsbn] = useState('');
     const [titel, setTitel] = useState('');
-    const [art, setArt] = useState<Buchart | ''>('');
+    const [selectedArten, setSelectedArten] = useState<Buchart[]>([]);
     const [rating, setRating] = useState<number | ''>('');
     const [lieferbar, setLieferbar] = useState<boolean | ''>('');
 
@@ -76,15 +76,22 @@ export function SearchPage() {
         }
     };
 
+    const handleArtToggle = (art: Buchart) => {
+        setSelectedArten((prev) =>
+            prev.includes(art)
+                ? prev.filter((a) => a !== art)
+                : [...prev, art]
+        );
+    };
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setHasSearched(true);
 
-        // Build search criteria
+        // Build search criteria (without art - we'll filter client-side)
         const criteria: BuchSuchkriterien = {};
         if (isbn.trim()) criteria.isbn = isbn.trim();
         if (titel.trim()) criteria.titel = titel.trim();
-        if (art) criteria.art = art;
         if (rating !== '') criteria.rating = Number(rating);
         if (lieferbar !== '') criteria.lieferbar = lieferbar;
 
@@ -124,7 +131,7 @@ export function SearchPage() {
     const handleReset = () => {
         setIsbn('');
         setTitel('');
-        setArt('');
+        setSelectedArten([]);
         setRating('');
         setLieferbar('');
         setBooks([]);
@@ -168,22 +175,36 @@ export function SearchPage() {
                         </Row>
 
                         <Row>
-                            <Col md={4} className="mb-3">
+                            <Col md={6} className="mb-3">
                                 <Form.Group controlId="art">
                                     <Form.Label>Buchart</Form.Label>
-                                    <Form.Select
-                                        value={art}
-                                        onChange={(e) => setArt(e.target.value as Buchart | '')}
-                                    >
-                                        <option value="">Alle</option>
-                                        <option value={Buchart.EPUB}>E-Book (EPUB)</option>
-                                        <option value={Buchart.HARDCOVER}>Hardcover</option>
-                                        <option value={Buchart.PAPERBACK}>Paperback</option>
-                                    </Form.Select>
+                                    <div>
+                                        <Form.Check
+                                            type="checkbox"
+                                            id="art-epub"
+                                            label="E-Book (EPUB)"
+                                            checked={selectedArten.includes(Buchart.EPUB)}
+                                            onChange={() => handleArtToggle(Buchart.EPUB)}
+                                        />
+                                        <Form.Check
+                                            type="checkbox"
+                                            id="art-hardcover"
+                                            label="Hardcover"
+                                            checked={selectedArten.includes(Buchart.HARDCOVER)}
+                                            onChange={() => handleArtToggle(Buchart.HARDCOVER)}
+                                        />
+                                        <Form.Check
+                                            type="checkbox"
+                                            id="art-paperback"
+                                            label="Paperback"
+                                            checked={selectedArten.includes(Buchart.PAPERBACK)}
+                                            onChange={() => handleArtToggle(Buchart.PAPERBACK)}
+                                        />
+                                    </div>
                                 </Form.Group>
                             </Col>
 
-                            <Col md={4} className="mb-3">
+                            <Col md={3} className="mb-3">
                                 <Form.Group controlId="rating">
                                     <Form.Label>Mindestbewertung</Form.Label>
                                     <Form.Select
@@ -202,20 +223,35 @@ export function SearchPage() {
                                 </Form.Group>
                             </Col>
 
-                            <Col md={4} className="mb-3">
+                            <Col md={3} className="mb-3">
                                 <Form.Group controlId="lieferbar">
                                     <Form.Label>Verfügbarkeit</Form.Label>
-                                    <Form.Select
-                                        value={lieferbar === '' ? '' : lieferbar.toString()}
-                                        onChange={(e) => {
-                                            const val = e.target.value;
-                                            setLieferbar(val === '' ? '' : val === 'true');
-                                        }}
-                                    >
-                                        <option value="">Alle</option>
-                                        <option value="true">Lieferbar</option>
-                                        <option value="false">Nicht lieferbar</option>
-                                    </Form.Select>
+                                    <div>
+                                        <Form.Check
+                                            type="radio"
+                                            id="lieferbar-alle"
+                                            label="Alle"
+                                            name="lieferbar"
+                                            checked={lieferbar === ''}
+                                            onChange={() => setLieferbar('')}
+                                        />
+                                        <Form.Check
+                                            type="radio"
+                                            id="lieferbar-ja"
+                                            label="Lieferbar"
+                                            name="lieferbar"
+                                            checked={lieferbar === true}
+                                            onChange={() => setLieferbar(true)}
+                                        />
+                                        <Form.Check
+                                            type="radio"
+                                            id="lieferbar-nein"
+                                            label="Nicht lieferbar"
+                                            name="lieferbar"
+                                            checked={lieferbar === false}
+                                            onChange={() => setLieferbar(false)}
+                                        />
+                                    </div>
                                 </Form.Group>
                             </Col>
                         </Row>
@@ -268,12 +304,31 @@ export function SearchPage() {
             {books.length > 0 && (
                 <div>
                     <div className="mb-3">
-                        <strong>{books.length}</strong>{' '}
-                        {books.length === 1 ? 'Buch' : 'Bücher'} gefunden
+                        <strong>
+                            {(() => {
+                                // Filter by selected arten client-side
+                                const filteredBooks = selectedArten.length > 0
+                                    ? books.filter(book => book.art && selectedArten.includes(book.art))
+                                    : books;
+                                return filteredBooks.length;
+                            })()}
+                        </strong>{' '}
+                        {(() => {
+                            const filteredBooks = selectedArten.length > 0
+                                ? books.filter(book => book.art && selectedArten.includes(book.art))
+                                : books;
+                            return filteredBooks.length === 1 ? 'Buch' : 'Bücher';
+                        })()} gefunden
                     </div>
 
                     <div className="d-flex flex-column gap-3">
-                        {books.map((book) => (
+                        {(() => {
+                            // Filter by selected arten client-side
+                            const filteredBooks = selectedArten.length > 0
+                                ? books.filter(book => book.art && selectedArten.includes(book.art))
+                                : books;
+                            return filteredBooks;
+                        })().map((book) => (
                             <Card key={book.id} className="shadow-sm">
                                 <Card.Body>
                                     <div className="d-flex justify-content-between align-items-start">
