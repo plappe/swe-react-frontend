@@ -158,11 +158,6 @@ export function CreateBookPage() {
                 setDatum('');
                 setHomepage('');
                 setSchlagwoerter([]);
-                
-                // Redirect after 2 seconds
-                setTimeout(() => {
-                    navigate('/suche');
-                }, 2000);
             }
         } catch (err) {
             console.error('Create error:', err);
@@ -184,7 +179,7 @@ export function CreateBookPage() {
             {success && (
                 <Alert variant="success" className="mb-4">
                     <i className="bi bi-check-circle me-2"></i>
-                    Buch erfolgreich erstellt! Sie werden zur Suchseite weitergeleitet...
+                    Buch erfolgreich erstellt! Sie können ein weiteres Buch anlegen.
                 </Alert>
             )}
 
