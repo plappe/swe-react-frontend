@@ -24,9 +24,9 @@ import Keycloak from 'keycloak-js';
  * damit verschiedene Umgebungen (Dev, Test, Prod) unterstützt werden.
  */
 export const keycloak = new Keycloak({
-    url: import.meta.env.VITE_KEYCLOAK_URL || 'https://localhost:8443',
-    realm: import.meta.env.VITE_KEYCLOAK_REALM || 'acme',
-    clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'buch-frontend',
+    url: import.meta.env.VITE_KEYCLOAK_URL || 'https://localhost:8843',
+    realm: import.meta.env.VITE_KEYCLOAK_REALM || 'nest',
+    clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'nest-client',
 });
 
 /**

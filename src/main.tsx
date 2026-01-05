@@ -13,8 +13,8 @@ import { ApolloProvider } from '@apollo/client/react';
 // Apollo Client für GraphQL
 import { apolloClient } from './graphql/client';
 
-// Auth Provider für Keycloak
-import { AuthProvider } from './auth/AuthProvider';
+// Auth Provider für Keycloak (Direct Access)
+import { DirectAuthProvider } from './auth/DirectAuthProvider';
 
 // Haupt-App Komponente
 import App from './App';
@@ -24,6 +24,9 @@ import './styles/index.css';
 
 // Bootstrap CSS importieren
 import 'bootstrap/dist/css/bootstrap.min.css';
+
+// Bootstrap Icons für Avatar und Icons
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 /**
  * React 18 verwendet createRoot statt ReactDOM.render
@@ -47,10 +50,10 @@ createRoot(rootElement).render(
         <ApolloProvider client={apolloClient}>
             {/* BrowserRouter ermöglicht URL-basiertes Routing */}
             <BrowserRouter>
-                {/* AuthProvider verwaltet Login-Status */}
-                <AuthProvider>
+                {/* DirectAuthProvider verwaltet Login-Status mit Direct Access Grants */}
+                <DirectAuthProvider>
                     <App />
-                </AuthProvider>
+                </DirectAuthProvider>
             </BrowserRouter>
         </ApolloProvider>
     </StrictMode>,

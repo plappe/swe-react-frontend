@@ -8,7 +8,7 @@
  * Komponentenbaum zu "tunneln" ohne Props durchzureichen.
  */
 
-import { useState, useEffect, useCallback, type ReactNode } from 'react';
+import { useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 import { keycloak, keycloakInitOptions } from './keycloak';
 import { AuthContext } from './AuthContext';
 import type { AuthContextType, User } from '../types';
@@ -36,6 +36,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    
+    // Ref to track if Keycloak is already initialized (prevents double init in StrictMode)
+    const isInitialized = useRef(false);
 
     /**
      * Benutzerinformationen aus Keycloak Token extrahieren
@@ -50,7 +53,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
             given_name?: string;
             family_name?: string;
             realm_access?: { roles?: string[] };
+            resource_access?: {
+                'nest-client'?: { roles?: string[] };
+            };
         };
+
+        // Extrahiere Client-spezifische Rollen (nest-client admin/user)
+        const clientRoles = tokenParsed.resource_access?.['nest-client']?.roles ?? [];
+        // Kombiniere mit Realm-Rollen falls vorhanden
+        const realmRoles = tokenParsed.realm_access?.roles ?? [];
+        const allRoles = [...clientRoles, ...realmRoles];
 
         return {
             id: tokenParsed.sub ?? '',
@@ -58,7 +70,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             email: tokenParsed.email,
             firstName: tokenParsed.given_name,
             lastName: tokenParsed.family_name,
-            roles: tokenParsed.realm_access?.roles ?? [],
+            roles: allRoles,
         };
     }, []);
 
@@ -119,11 +131,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
      * Keycloak initialisieren beim App-Start
      */
     useEffect(() => {
+        // Prevent double initialization in React StrictMode
+        if (isInitialized.current) {
+            return;
+        }
+        
         const initKeycloak = async () => {
             try {
+                isInitialized.current = true;
+                
                 // Keycloak initialisieren
                 const authenticated = await keycloak.init(keycloakInitOptions);
-
+                
                 setIsAuthenticated(authenticated);
 
                 if (authenticated) {

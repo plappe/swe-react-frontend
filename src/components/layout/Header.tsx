@@ -5,9 +5,11 @@
  * Verwendet React-Bootstrap für responsive Gestaltung.
  */
 
-import { Navbar, Nav, Container, Button } from 'react-bootstrap';
+import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../auth';
+import { UserMenu } from './UserMenu';
+import { LoginButton } from './LoginButton';
 
 /**
  * Header
@@ -15,17 +17,17 @@ import { useAuth } from '../../auth';
  * Features:
  * - Responsive Navigation (Hamburger-Menü auf mobilen Geräten)
  * - Aktive Route wird hervorgehoben (NavLink)
- * - Login/Logout Button je nach Auth-Status
+ * - Login/User-Menü je nach Auth-Status
  */
 export function Header() {
-    const { isAuthenticated, user, login, logout } = useAuth();
+    const { isAuthenticated } = useAuth();
 
     return (
         <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
             <Container>
                 {/* Logo/Brand */}
                 <Navbar.Brand as={Link} to="/">
-                    📚 Buchverwaltung
+                    Buchverwaltung
                 </Navbar.Brand>
 
                 {/* Hamburger-Button für mobile Ansicht */}
@@ -49,22 +51,9 @@ export function Header() {
                         )}
                     </Nav>
 
-                    {/* Rechte Seite: Login/User Info */}
+                    {/* Rechte Seite: Login/User Menu */}
                     <Nav>
-                        {isAuthenticated ? (
-                            <>
-                                <Navbar.Text className="me-3">
-                                    Angemeldet als: <strong>{user?.username}</strong>
-                                </Navbar.Text>
-                                <Button variant="outline-light" onClick={logout}>
-                                    Logout
-                                </Button>
-                            </>
-                        ) : (
-                            <Button variant="outline-light" onClick={login}>
-                                Login
-                            </Button>
-                        )}
+                        {isAuthenticated ? <UserMenu /> : <LoginButton />}
                     </Nav>
                 </Navbar.Collapse>
             </Container>

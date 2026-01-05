@@ -21,13 +21,19 @@ export default defineConfig({
     // Development server configuration
     server: {
         port: 5173,
-        // Proxy API requests to your NestJS backend
-        // This avoids CORS issues during development
+        // Proxy API requests to avoid CORS issues during development
         proxy: {
             '/graphql': {
                 target: 'https://localhost:3000',
                 changeOrigin: true,
                 secure: false, // Accept self-signed certificates
+            },
+            // Proxy Keycloak requests
+            '/auth': {
+                target: 'https://localhost:8843',
+                changeOrigin: true,
+                secure: false,
+                rewrite: (path) => path.replace(/^\/auth/, ''),
             },
         },
     },
