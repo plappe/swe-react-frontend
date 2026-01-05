@@ -50,12 +50,6 @@ export function Header() {
                                 Buch erstellen
                             </Nav.Link>
                         )}
-                        {/* "Neu anlegen" nur für eingeloggte Benutzer */}
-                        {isAuthenticated && (
-                            <Nav.Link as={NavLink} to="/neu">
-                                Neues Buch
-                            </Nav.Link>
-                        )}
                     </Nav>
 
                     {/* Rechte Seite: Login/User Menu */}

@@ -11,17 +11,13 @@ import { Routes, Route } from 'react-router-dom';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 
-// Seiten-Komponenten (werden später implementiert)
+// Seiten-Komponenten
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { SearchPage } from './pages/SearchPage';
 import { DetailPage } from './pages/DetailPage';
-import { CreatePage } from './pages/CreatePage';
 import { CreateBookPage } from './pages/CreateBookPage';
 import { NotFoundPage } from './pages/NotFoundPage';
-
-// Geschützte Route Komponente
-import { ProtectedRoute } from './auth/ProtectedRoute';
 
 /**
  * App Component
@@ -45,16 +41,6 @@ function App() {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/suche" element={<SearchPage />} />
                     <Route path="/buch/:id" element={<DetailPage />} />
-
-                    {/* Geschützte Routen - nur für eingeloggte Benutzer */}
-                    <Route
-                        path="/neu"
-                        element={
-                            <ProtectedRoute>
-                                <CreatePage />
-                            </ProtectedRoute>
-                        }
-                    />
                     
                     {/* Admin-Route - nur für Admins */}
                     <Route path="/buch-erstellen" element={<CreateBookPage />} />
