@@ -8,6 +8,8 @@ import { useState, FormEvent } from 'react';
 import { Container, Form, Button, Alert, Card, Badge, Row, Col } from 'react-bootstrap';
 import { apolloClient } from '../graphql';
 import { SUCHE_BUECHER } from '../graphql/queries';
+import { LOESCHE_BUCH } from '../graphql/mutations';
+import { useAuth } from '../auth';
 import { type BuchSuchkriterien, type Buch, Buchart } from '../types';
 
 interface SearchBooksData {
@@ -18,7 +20,20 @@ interface SearchBooksVars {
     suchparameter: BuchSuchkriterien;
 }
 
+interface DeleteBuchData {
+    delete: {
+        success: boolean;
+    };
+}
+
+interface DeleteBuchVars {
+    id: string;
+}
+
 export function SearchPage() {
+    const { user, isAuthenticated } = useAuth();
+    const isAdmin = isAuthenticated && user?.roles?.includes('admin');
+
     // Form state
     const [isbn, setIsbn] = useState('');
     const [titel, setTitel] = useState('');
@@ -78,6 +93,33 @@ export function SearchPage() {
 
     // Backend GraphQL doesn't support pagination parameters
     // It always returns the first 5 books (DEFAULT_PAGE_SIZE)
+
+    const handleDelete = async (bookId: number, bookTitle: string) => {
+        // Confirmation dialog
+        const confirmed = window.confirm(
+            `Möchten Sie das Buch "${bookTitle}" wirklich löschen?\n\nDieser Vorgang kann nicht rückgängig gemacht werden.`
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            const result = await apolloClient.mutate<DeleteBuchData, DeleteBuchVars>({
+                mutation: LOESCHE_BUCH,
+                variables: { id: String(bookId) },
+            });
+
+            if (result.data?.delete?.success) {
+                // Remove book from list
+                setBooks((prevBooks) => prevBooks.filter((book) => book.id !== bookId));
+                setError(null);
+            }
+        } catch (err) {
+            console.error('Delete error:', err);
+            setError(err instanceof Error ? err.message : 'Fehler beim Löschen des Buches');
+        }
+    };
 
     const handleReset = () => {
         setIsbn('');
@@ -267,7 +309,20 @@ export function SearchPage() {
                                                     {'⭐'.repeat(book.rating)} {book.rating}/5
                                                 </Badge>
                                             </div>
-
+                                            {isAdmin && (
+                                                <div className="mt-2">
+                                                    <Button
+                                                        variant="outline-danger"
+                                                        size="sm"
+                                                        onClick={() => handleDelete(book.id, book.titel?.titel || 'Ohne Titel')}
+                                                        disabled={loading}
+                                                        title="Buch löschen"
+                                                    >
+                                                        <i className="bi bi-trash me-1"></i>
+                                                        Löschen
+                                                    </Button>
+                                                </div>
+                                            )}
                                             {book.schlagwoerter && book.schlagwoerter.length > 0 && (
                                                 <div className="mb-2">
                                                     <small className="text-muted">Schlagwörter: </small>

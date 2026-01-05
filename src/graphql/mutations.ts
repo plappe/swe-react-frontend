@@ -45,10 +45,12 @@ export const AKTUALISIERE_BUCH = gql`
 /**
  * Mutation: Buch löschen
  *
- * Gibt nur eine Bestätigung zurück, keine Daten.
+ * Gibt Bestätigung zurück (DeletePayload mit success flag).
  */
 export const LOESCHE_BUCH = gql`
-    mutation LoescheBuch($id: Int!) {
-        delete(id: $id)
+    mutation LoescheBuch($id: ID!) {
+        delete(id: $id) {
+            success
+        }
     }
 `;
