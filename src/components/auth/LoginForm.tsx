@@ -46,7 +46,7 @@ export function LoginForm() {
                             <Form.Label>Benutzername</Form.Label>
                             <Form.Control
                                 type="text"
-                                placeholder="admin oder user"
+                                placeholder="Benutzername eingeben"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 required
@@ -71,12 +71,6 @@ export function LoginForm() {
                             </Button>
                         </div>
                     </Form>
-
-                    <div className="text-center mt-3 text-muted small">
-                        <p className="mb-1">Testbenutzer:</p>
-                        <p className="mb-0">admin/p (Administrator)</p>
-                        <p>user/p (Benutzer)</p>
-                    </div>
                 </Card.Body>
             </Card>
         </Container>

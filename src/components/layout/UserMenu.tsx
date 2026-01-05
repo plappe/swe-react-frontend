@@ -25,11 +25,6 @@ export function UserMenu() {
             id="user-dropdown"
             align="end"
         >
-            <NavDropdown.ItemText>
-                <div className="text-muted small">Angemeldet als</div>
-                <strong>{user?.username}</strong>
-            </NavDropdown.ItemText>
-            <NavDropdown.Divider />
             <NavDropdown.Item onClick={logout}>
                 <i className="bi bi-box-arrow-right me-2"></i>
                 Abmelden

@@ -12,7 +12,7 @@ export function LoginButton() {
         <Link to="/login">
             <Button variant="outline-light">
                 <i className="bi bi-box-arrow-in-right me-2"></i>
-                Login
+                Anmelden
             </Button>
         </Link>
     );
