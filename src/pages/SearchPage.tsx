@@ -47,8 +47,15 @@ export function SearchPage() {
 
             setBooks(result.data?.buecher || []);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Ein Fehler ist aufgetreten');
-            setBooks([]);
+            // Handle "no books found" as empty result, not an error
+            const errorMessage = err instanceof Error ? err.message : 'Ein Fehler ist aufgetreten';
+            if (errorMessage.includes('Keine Buecher gefunden') || errorMessage.includes('Keine Bücher gefunden')) {
+                setBooks([]);
+                setError(null);
+            } else {
+                setError(errorMessage);
+                setBooks([]);
+            }
         } finally {
             setLoading(false);
         }
