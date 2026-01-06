@@ -145,7 +145,7 @@ export function CreateBookPage() {
     const [isbn, setIsbn] = useState('');
     const [titel, setTitel] = useState('');
     const [untertitel, setUntertitel] = useState('');
-    const [art, setArt] = useState<Buchart>(Buchart.PAPERBACK);
+    const [art, setArt] = useState<Buchart | ''>('');
     const [rating, setRating] = useState(0);
     const [preis, setPreis] = useState('');
     const [rabatt, setRabatt] = useState('');
@@ -242,6 +242,17 @@ export function CreateBookPage() {
         }
     };
 
+    const validateArt = () => {
+        if (!art) {
+            setFieldErrors(prev => ({ ...prev, art: 'Buchart ist ein Pflichtfeld.' }));
+        } else {
+            setFieldErrors(prev => {
+                const { art: _art, ...rest } = prev;
+                return rest;
+            });
+        }
+    };
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -250,8 +261,8 @@ export function CreateBookPage() {
 
         try {
             // Validate required fields
-            if (!isbn || !titel || !preis) {
-                throw new Error('ISBN, Titel und Preis sind Pflichtfelder');
+            if (!isbn || !titel || !preis || !art) {
+                throw new Error('ISBN, Titel, Preis und Buchart sind Pflichtfelder');
             }
 
             const preisFloat = parseFloat(preis);
@@ -301,7 +312,7 @@ export function CreateBookPage() {
                 setIsbn('');
                 setTitel('');
                 setUntertitel('');
-                setArt(Buchart.PAPERBACK);
+                setArt('');
                 setRating(0);
                 setPreis('');
                 setRabatt('');
@@ -360,12 +371,18 @@ export function CreateBookPage() {
                                     <Form.Select
                                         value={art}
                                         onChange={(e) => setArt(e.target.value as Buchart)}
+                                        onBlur={validateArt}
+                                        isInvalid={!!fieldErrors.art}
                                         required
                                     >
+                                        <option value="">Auswählen...</option>
                                         <option value={Buchart.PAPERBACK}>Paperback</option>
                                         <option value={Buchart.HARDCOVER}>Hardcover</option>
                                         <option value={Buchart.EPUB}>E-Book (EPUB)</option>
                                     </Form.Select>
+                                    <Form.Control.Feedback type="invalid">
+                                        {fieldErrors.art}
+                                    </Form.Control.Feedback>
                                 </Form.Group>
                             </Col>
                         </Row>
@@ -569,7 +586,7 @@ export function CreateBookPage() {
                             <Button
                                 variant="outline-secondary"
                                 type="button"
-                                onClick={() => navigate('/search')}
+                                onClick={() => navigate('/')}
                                 disabled={loading}
                             >
                                 Abbrechen
