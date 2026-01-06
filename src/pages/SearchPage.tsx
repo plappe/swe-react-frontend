@@ -52,6 +52,8 @@ export function SearchPage() {
     const [currentPage, setCurrentPage] = useState(0);
     const [pageSize] = useState(5);
     const [totalElements, setTotalElements] = useState(0);
+    const [lastSearchCriteria, setLastSearchCriteria] = useState<BuchSuchkriterien | null>(null);
+    const [lastMultiArtFilter, setLastMultiArtFilter] = useState<string[]>([]);
 
     // Results state
     const [books, setBooks] = useState<Buch[]>([]);
@@ -59,27 +61,69 @@ export function SearchPage() {
     const [error, setError] = useState<string | null>(null);
     const [hasSearched, setHasSearched] = useState(false);
 
-    const performSearch = async (criteria: BuchSuchkriterien, page: number = 0) => {
+    const performSearch = async (criteria: BuchSuchkriterien, page: number = 0, multiArtFilter: string[] = []) => {
         setLoading(true);
         setError(null);
 
         try {
-            // Backend expects 1-based page numbers (page 1, 2, 3...)
-            // Frontend uses 0-based internally (page 0, 1, 2...)
-            const result = await apolloClient.query<SearchBooksData, SearchBooksVars>({
-                query: SUCHE_BUECHER,
-                variables: {
-                    suchparameter: criteria,
-                    pageable: {
-                        page: page + 1, // Convert 0-based to 1-based
-                        size: pageSize,
-                    },
-                },
-                fetchPolicy: 'no-cache',
-            });
+            const isMultipleArtFilter = multiArtFilter.length > 1;
 
-            setBooks(result.data?.buecher?.content || []);
-            setTotalElements(result.data?.buecher?.totalElements || 0);
+            if (isMultipleArtFilter) {
+                // For multiple art filters, fetch all pages and filter client-side
+                let allBooks: Buch[] = [];
+                let currentBackendPage = 1;
+                let hasMore = true;
+
+                // Fetch all pages
+                while (hasMore) {
+                    const result = await apolloClient.query<SearchBooksData, SearchBooksVars>({
+                        query: SUCHE_BUECHER,
+                        variables: {
+                            suchparameter: criteria,
+                            pageable: {
+                                page: currentBackendPage,
+                                size: pageSize,
+                            },
+                        },
+                        fetchPolicy: 'no-cache',
+                    });
+
+                    const books = result.data?.buecher?.content || [];
+                    allBooks = [...allBooks, ...books];
+
+                    // Check if there are more pages
+                    hasMore = books.length === pageSize;
+                    currentBackendPage++;
+                }
+
+                // Filter by art types client-side
+                const filtered = allBooks.filter(
+                    (book) => book.art && multiArtFilter.includes(book.art)
+                );
+                setTotalElements(filtered.length);
+
+                // Paginate filtered results
+                const startIndex = page * pageSize;
+                const paginatedBooks = filtered.slice(startIndex, startIndex + pageSize);
+                setBooks(paginatedBooks);
+            } else {
+                // Single art or no art filter - normal backend pagination
+                const result = await apolloClient.query<SearchBooksData, SearchBooksVars>({
+                    query: SUCHE_BUECHER,
+                    variables: {
+                        suchparameter: criteria,
+                        pageable: {
+                            page: page + 1, // Backend expects 1-based page numbers
+                            size: pageSize,
+                        },
+                    },
+                    fetchPolicy: 'no-cache',
+                });
+
+                setBooks(result.data?.buecher?.content || []);
+                setTotalElements(result.data?.buecher?.totalElements || 0);
+            }
+
             setCurrentPage(page);
         } catch (err) {
             // Handle "no books found" as empty result, not an error
@@ -111,19 +155,36 @@ export function SearchPage() {
         e.preventDefault();
         setHasSearched(true);
 
-        // Build search criteria (without art - we'll filter client-side)
+        // Build search criteria - now including art
         const criteria: BuchSuchkriterien = {};
         if (isbn.trim()) criteria.isbn = isbn.trim();
         if (titel.trim()) criteria.titel = titel.trim();
         if (rating !== '') criteria.rating = Number(rating);
         if (lieferbar !== '') criteria.lieferbar = lieferbar;
+        // Note: Backend only supports single art, not multiple
+        // If multiple arten selected, we still need client-side filtering
+        const multiArtFilter = selectedArten.length > 1 ? selectedArten : [];
+        if (selectedArten.length === 1) {
+            criteria.art = selectedArten[0];
+        }
 
+        setLastSearchCriteria(criteria);
+        setLastMultiArtFilter(multiArtFilter);
         setCurrentPage(0);
-        await performSearch(criteria, 0);
+        await performSearch(criteria, 0, multiArtFilter);
     };
 
-    // Backend GraphQL doesn't support pagination parameters
-    // It always returns the first 5 books (DEFAULT_PAGE_SIZE)
+    const handleNextPage = () => {
+        if (lastSearchCriteria && hasNextPage) {
+            performSearch(lastSearchCriteria, currentPage + 1, lastMultiArtFilter);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (lastSearchCriteria && currentPage > 0) {
+            performSearch(lastSearchCriteria, currentPage - 1, lastMultiArtFilter);
+        }
+    };
 
     const handleDelete = async (bookId: number, bookTitle: string) => {
         // Confirmation dialog
@@ -165,18 +226,12 @@ export function SearchPage() {
         setTotalElements(0);
     };
 
-    const handlePageChange = async (newPage: number) => {
-        // Build current search criteria
-        const criteria: BuchSuchkriterien = {};
-        if (isbn.trim()) criteria.isbn = isbn.trim();
-        if (titel.trim()) criteria.titel = titel.trim();
-        if (rating !== '') criteria.rating = Number(rating);
-        if (lieferbar !== '') criteria.lieferbar = lieferbar;
+    // Since we handle multi-art filtering in performSearch now, just use books directly
+    const filteredBooks = books;
 
-        await performSearch(criteria, newPage);
-    };
-
-    const totalPages = Math.ceil(totalElements / pageSize);
+    // Determine if there are more pages based on actual data
+    // If current page has fewer books than pageSize, we're on the last page
+    const hasNextPage = books.length === pageSize && currentPage < Math.ceil(totalElements / pageSize) - 1;
 
     return (
         <Container className="py-5">
@@ -342,63 +397,35 @@ export function SearchPage() {
             {/* Results */}
             {books.length > 0 && (
                 <div>
-                    <div className="mb-3 d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>
-                                {(() => {
-                                    // Filter by selected arten client-side
-                                    const filteredBooks =
-                                        selectedArten.length > 0
-                                            ? books.filter(
-                                                  (book) =>
-                                                      book.art && selectedArten.includes(book.art),
-                                              )
-                                            : books;
-                                    return filteredBooks.length;
-                                })()}
-                            </strong>{' '}
-                            von <strong>{totalElements}</strong>{' '}
-                            {totalElements === 1 ? 'Buch' : 'Bücher'} (Seite {currentPage + 1} von{' '}
-                            {totalPages})
-                        </div>
-
-                        {/* Pagination Controls */}
-                        {totalPages > 1 && (
+                    {/* Pagination Controls */}
+                    {(hasNextPage || currentPage > 0) && (
+                        <div className="mb-3 d-flex justify-content-end">
                             <div className="d-flex gap-2">
                                 <Button
                                     variant="outline-primary"
                                     size="sm"
-                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    onClick={handlePreviousPage}
                                     disabled={currentPage === 0 || loading}
                                 >
                                     <i className="bi bi-chevron-left"></i> Zurück
                                 </Button>
                                 <span className="align-self-center px-2">
-                                    Seite {currentPage + 1} / {totalPages}
+                                    Seite {currentPage + 1}
                                 </span>
                                 <Button
                                     variant="outline-primary"
                                     size="sm"
-                                    onClick={() => handlePageChange(currentPage + 1)}
-                                    disabled={currentPage >= totalPages - 1 || loading}
+                                    onClick={handleNextPage}
+                                    disabled={!hasNextPage || loading}
                                 >
                                     Weiter <i className="bi bi-chevron-right"></i>
                                 </Button>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
 
                     <div className="d-flex flex-column gap-3">
-                        {(() => {
-                            // Filter by selected arten client-side
-                            const filteredBooks =
-                                selectedArten.length > 0
-                                    ? books.filter(
-                                          (book) => book.art && selectedArten.includes(book.art),
-                                      )
-                                    : books;
-                            return filteredBooks;
-                        })().map((book) => (
+                        {filteredBooks.map((book) => (
                             <Card key={book.id} className="shadow-sm">
                                 <Card.Body>
                                     <div className="d-flex justify-content-between align-items-start">
