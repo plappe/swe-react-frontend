@@ -129,6 +129,9 @@ export function CreateBookPage() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
 
+    // Field-level validation errors
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
     // Check if user is admin
     const isAdmin = isAuthenticated && user?.roles?.includes('admin');
 
@@ -164,6 +167,79 @@ export function CreateBookPage() {
     // Remove schlagwort
     const handleRemoveSchlagwort = (wort: string) => {
         setSchlagwoerter(schlagwoerter.filter(w => w !== wort));
+    };
+
+    // Field validation handlers
+    const validateIsbn = () => {
+        if (!isbn.trim()) {
+            setFieldErrors(prev => ({ ...prev, isbn: 'ISBN ist ein Pflichtfeld.' }));
+        } else {
+            // Remove hyphens and spaces for validation
+            const cleanIsbn = isbn.replace(/[-\s]/g, '');
+            // Check if it's a valid ISBN-10 or ISBN-13 format
+            const isValidLength = cleanIsbn.length === 10 || cleanIsbn.length === 13;
+            const isValidChars = /^[\dX]+$/i.test(cleanIsbn);
+            
+            if (!isValidLength || !isValidChars) {
+                setFieldErrors(prev => ({ 
+                    ...prev, 
+                    isbn: 'ISBN muss eine gültige ISBN-10 (10 Ziffern) oder ISBN-13 (13 Ziffern) sein. Bindestriche sind erlaubt.' 
+                }));
+            } else {
+                setFieldErrors(prev => {
+                    const { isbn: _isbn, ...rest } = prev;
+                    return rest;
+                });
+            }
+        }
+    };
+
+    const validateTitel = () => {
+        if (!titel.trim()) {
+            setFieldErrors(prev => ({ ...prev, titel: 'Titel ist ein Pflichtfeld.' }));
+        } else {
+            setFieldErrors(prev => {
+                const { titel: _titel, ...rest } = prev;
+                return rest;
+            });
+        }
+    };
+
+    const validatePreis = () => {
+        if (!preis) {
+            setFieldErrors(prev => ({ ...prev, preis: 'Preis ist ein Pflichtfeld.' }));
+        } else {
+            const preisFloat = parseFloat(preis);
+            if (isNaN(preisFloat) || preisFloat <= 0) {
+                setFieldErrors(prev => ({ ...prev, preis: 'Preis muss eine positive Zahl sein.' }));
+            } else {
+                setFieldErrors(prev => {
+                    const { preis: _preis, ...rest } = prev;
+                    return rest;
+                });
+            }
+        }
+    };
+
+    const validateHomepage = () => {
+        if (homepage && homepage.trim()) {
+            // Simple URL validation
+            const urlPattern = /^https?:\/\/.+/;
+            if (!urlPattern.test(homepage)) {
+                setFieldErrors(prev => ({ ...prev, homepage: 'Homepage muss eine gültige URL sein (z.B. https://beispiel.de).' }));
+            } else {
+                setFieldErrors(prev => {
+                    const { homepage: _homepage, ...rest } = prev;
+                    return rest;
+                });
+            }
+        } else {
+            // Clear error if field is empty (it's optional)
+            setFieldErrors(prev => {
+                const { homepage: _homepage, ...rest } = prev;
+                return rest;
+            });
+        }
     };
 
     const handleSubmit = async (e: FormEvent) => {
@@ -233,6 +309,7 @@ export function CreateBookPage() {
                 setDatum('');
                 setHomepage('');
                 setSchlagwoerter([]);
+                setFieldErrors({});
             }
         } catch (err) {
             console.error('Create error:', err);
@@ -267,8 +344,13 @@ export function CreateBookPage() {
                                         placeholder="z.B. 978-3-16-148410-0"
                                         value={isbn}
                                         onChange={(e) => setIsbn(e.target.value)}
+                                        onBlur={validateIsbn}
+                                        isInvalid={!!fieldErrors.isbn}
                                         required
                                     />
+                                    <Form.Control.Feedback type="invalid">
+                                        {fieldErrors.isbn}
+                                    </Form.Control.Feedback>
                                 </Form.Group>
                             </Col>
 
@@ -297,8 +379,13 @@ export function CreateBookPage() {
                                         placeholder="Buchtitel"
                                         value={titel}
                                         onChange={(e) => setTitel(e.target.value)}
+                                        onBlur={validateTitel}
+                                        isInvalid={!!fieldErrors.titel}
                                         required
                                     />
+                                    <Form.Control.Feedback type="invalid">
+                                        {fieldErrors.titel}
+                                    </Form.Control.Feedback>
                                 </Form.Group>
                             </Col>
 
@@ -343,8 +430,13 @@ export function CreateBookPage() {
                                         placeholder="z.B. 29.99"
                                         value={preis}
                                         onChange={(e) => setPreis(e.target.value)}
+                                        onBlur={validatePreis}
+                                        isInvalid={!!fieldErrors.preis}
                                         required
                                     />
+                                    <Form.Control.Feedback type="invalid">
+                                        {fieldErrors.preis}
+                                    </Form.Control.Feedback>
                                 </Form.Group>
                             </Col>
 
@@ -402,7 +494,12 @@ export function CreateBookPage() {
                                         placeholder="https://..."
                                         value={homepage}
                                         onChange={(e) => setHomepage(e.target.value)}
+                                        onBlur={validateHomepage}
+                                        isInvalid={!!fieldErrors.homepage}
                                     />
+                                    <Form.Control.Feedback type="invalid">
+                                        {fieldErrors.homepage}
+                                    </Form.Control.Feedback>
                                 </Form.Group>
                             </Col>
                         </Row>
