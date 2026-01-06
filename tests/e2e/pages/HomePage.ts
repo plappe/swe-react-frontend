@@ -34,14 +34,14 @@ export class HomePage {
 
         // getByRole findet Elemente nach ihrer semantischen Rolle
         // Das ist barrierefrei und robust gegen CSS-Änderungen
-        this.heading = page.getByRole('heading', { name: /willkommen/i });
+        this.heading = page.getByRole('heading', { name: /buchverwaltung/i });
 
         // getByRole mit 'link' findet <a> Tags
-        this.searchButton = page.getByRole('link', { name: /zur suche/i });
-        this.createButton = page.getByRole('link', { name: /buch anlegen/i });
+        this.searchButton = page.getByRole('button', { name: /zur suche/i });
+        this.createButton = page.getByRole('link', { name: /buch erstellen/i });
 
-        // Button für Login (im Header)
-        this.loginButton = page.getByRole('button', { name: /login/i });
+        // Link für Login - use the specific "Jetzt anmelden" link text
+        this.loginButton = page.getByRole('link', { name: 'Jetzt anmelden' });
     }
 
     /**

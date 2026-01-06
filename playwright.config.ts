@@ -44,7 +44,7 @@ export default defineConfig({
     // Gemeinsame Einstellungen für alle Tests
     use: {
         // Basis-URL für relative Pfade (z.B. page.goto('/login'))
-        baseURL: 'http://localhost:3000',
+        baseURL: 'http://localhost:5173',
 
         // Screenshot bei Fehler
         screenshot: 'only-on-failure',
@@ -82,7 +82,7 @@ export default defineConfig({
     // Lokalen Entwicklungsserver starten vor den Tests
     webServer: {
         command: 'pnpm dev',
-        url: 'http://localhost:3000',
+        url: 'http://localhost:5173',
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
     },
