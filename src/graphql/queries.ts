@@ -40,14 +40,16 @@ export const BUCH_FRAGMENT = gql`
 /**
  * Query: Alle Bücher suchen
  *
- * Unterstützt Filterung nach Suchkriterien
- * Backend limitiert auf 5 Bücher (DEFAULT_PAGE_SIZE)
+ * Unterstützt Filterung nach Suchkriterien und Pagination
  */
 export const SUCHE_BUECHER = gql`
     ${BUCH_FRAGMENT}
-    query SucheBuecher($suchparameter: SuchparameterInput) {
-        buecher(suchparameter: $suchparameter) {
-            ...BuchFields
+    query SucheBuecher($suchparameter: SuchparameterInput, $pageable: PageableInput) {
+        buecher(suchparameter: $suchparameter, pageable: $pageable) {
+            content {
+                ...BuchFields
+            }
+            totalElements
         }
     }
 `;

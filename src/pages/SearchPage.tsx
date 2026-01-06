@@ -13,11 +13,18 @@ import { useAuth } from '../auth';
 import { type BuchSuchkriterien, type Buch, Buchart } from '../types';
 
 interface SearchBooksData {
-    buecher: Buch[];
+    buecher: {
+        content: Buch[];
+        totalElements: number;
+    };
 }
 
 interface SearchBooksVars {
-    suchparameter: BuchSuchkriterien;
+    suchparameter?: BuchSuchkriterien;
+    pageable?: {
+        page?: number;
+        size?: number;
+    };
 }
 
 interface DeleteBuchData {
@@ -41,35 +48,50 @@ export function SearchPage() {
     const [rating, setRating] = useState<number | ''>('');
     const [lieferbar, setLieferbar] = useState<boolean | ''>('');
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(0);
+    const [pageSize] = useState(5);
+    const [totalElements, setTotalElements] = useState(0);
+
     // Results state
     const [books, setBooks] = useState<Buch[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [hasSearched, setHasSearched] = useState(false);
 
-    const performSearch = async (criteria: BuchSuchkriterien) => {
+    const performSearch = async (criteria: BuchSuchkriterien, page: number = 0) => {
         setLoading(true);
         setError(null);
 
         try {
+            // Backend expects 1-based page numbers (page 1, 2, 3...)
+            // Frontend uses 0-based internally (page 0, 1, 2...)
             const result = await apolloClient.query<SearchBooksData, SearchBooksVars>({
                 query: SUCHE_BUECHER,
                 variables: {
                     suchparameter: criteria,
+                    pageable: {
+                        page: page + 1, // Convert 0-based to 1-based
+                        size: pageSize,
+                    },
                 },
-                fetchPolicy: 'network-only',
+                fetchPolicy: 'no-cache',
             });
 
-            setBooks(result.data?.buecher || []);
+            setBooks(result.data?.buecher?.content || []);
+            setTotalElements(result.data?.buecher?.totalElements || 0);
+            setCurrentPage(page);
         } catch (err) {
             // Handle "no books found" as empty result, not an error
             const errorMessage = err instanceof Error ? err.message : 'Ein Fehler ist aufgetreten';
             if (errorMessage.includes('Keine Buecher gefunden') || errorMessage.includes('Keine Bücher gefunden')) {
                 setBooks([]);
+                setTotalElements(0);
                 setError(null);
             } else {
                 setError(errorMessage);
                 setBooks([]);
+                setTotalElements(0);
             }
         } finally {
             setLoading(false);
@@ -95,7 +117,8 @@ export function SearchPage() {
         if (rating !== '') criteria.rating = Number(rating);
         if (lieferbar !== '') criteria.lieferbar = lieferbar;
 
-        await performSearch(criteria);
+        setCurrentPage(0);
+        await performSearch(criteria, 0);
     };
 
     // Backend GraphQL doesn't support pagination parameters
@@ -137,7 +160,22 @@ export function SearchPage() {
         setBooks([]);
         setHasSearched(false);
         setError(null);
+        setCurrentPage(0);
+        setTotalElements(0);
     };
+
+    const handlePageChange = async (newPage: number) => {
+        // Build current search criteria
+        const criteria: BuchSuchkriterien = {};
+        if (isbn.trim()) criteria.isbn = isbn.trim();
+        if (titel.trim()) criteria.titel = titel.trim();
+        if (rating !== '') criteria.rating = Number(rating);
+        if (lieferbar !== '') criteria.lieferbar = lieferbar;
+
+        await performSearch(criteria, newPage);
+    };
+
+    const totalPages = Math.ceil(totalElements / pageSize);
 
     return (
         <Container className="py-5">
@@ -303,22 +341,45 @@ export function SearchPage() {
             {/* Results */}
             {books.length > 0 && (
                 <div>
-                    <div className="mb-3">
-                        <strong>
-                            {(() => {
-                                // Filter by selected arten client-side
-                                const filteredBooks = selectedArten.length > 0
-                                    ? books.filter(book => book.art && selectedArten.includes(book.art))
-                                    : books;
-                                return filteredBooks.length;
-                            })()}
-                        </strong>{' '}
-                        {(() => {
-                            const filteredBooks = selectedArten.length > 0
-                                ? books.filter(book => book.art && selectedArten.includes(book.art))
-                                : books;
-                            return filteredBooks.length === 1 ? 'Buch' : 'Bücher';
-                        })()} gefunden
+                    <div className="mb-3 d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>
+                                {(() => {
+                                    // Filter by selected arten client-side
+                                    const filteredBooks = selectedArten.length > 0
+                                        ? books.filter(book => book.art && selectedArten.includes(book.art))
+                                        : books;
+                                    return filteredBooks.length;
+                                })()}
+                            </strong>{' '}
+                            von <strong>{totalElements}</strong>{' '}
+                            {totalElements === 1 ? 'Buch' : 'Bücher'} (Seite {currentPage + 1} von {totalPages})
+                        </div>
+                        
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="d-flex gap-2">
+                                <Button
+                                    variant="outline-primary"
+                                    size="sm"
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    disabled={currentPage === 0 || loading}
+                                >
+                                    <i className="bi bi-chevron-left"></i> Zurück
+                                </Button>
+                                <span className="align-self-center px-2">
+                                    Seite {currentPage + 1} / {totalPages}
+                                </span>
+                                <Button
+                                    variant="outline-primary"
+                                    size="sm"
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    disabled={currentPage >= totalPages - 1 || loading}
+                                >
+                                    Weiter <i className="bi bi-chevron-right"></i>
+                                </Button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="d-flex flex-column gap-3">
