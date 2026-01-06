@@ -46,29 +46,32 @@ export function DirectAuthProvider({ children }: AuthProviderProps) {
     /**
      * Login mit Benutzername und Passwort
      */
-    const login = useCallback(async (username?: string, password?: string) => {
-        if (!username || !password) {
-            throw new Error('Benutzername und Passwort sind erforderlich');
-        }
-        try {
-            const response = await loginWithPassword(username, password);
+    const login = useCallback(
+        async (username?: string, password?: string) => {
+            if (!username || !password) {
+                throw new Error('Benutzername und Passwort sind erforderlich');
+            }
+            try {
+                const response = await loginWithPassword(username, password);
 
-            // Token speichern
-            setToken(response.access_token);
-            setRefreshTokenValue(response.refresh_token);
-            localStorage.setItem('auth_token', response.access_token);
-            localStorage.setItem('refresh_token', response.refresh_token);
+                // Token speichern
+                setToken(response.access_token);
+                setRefreshTokenValue(response.refresh_token);
+                localStorage.setItem('auth_token', response.access_token);
+                localStorage.setItem('refresh_token', response.refresh_token);
 
-            // User extrahieren
-            const currentUser = extractUser(response.access_token);
-            setUser(currentUser);
-            setIsAuthenticated(true);
-            setError(null);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Login fehlgeschlagen');
-            throw err;
-        }
-    }, [extractUser]);
+                // User extrahieren
+                const currentUser = extractUser(response.access_token);
+                setUser(currentUser);
+                setIsAuthenticated(true);
+                setError(null);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Login fehlgeschlagen');
+                throw err;
+            }
+        },
+        [extractUser],
+    );
 
     /**
      * Logout

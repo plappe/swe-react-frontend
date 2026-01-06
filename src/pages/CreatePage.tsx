@@ -15,7 +15,10 @@ export function CreatePage() {
             <h1>➕ Neues Buch anlegen</h1>
             <Alert variant="info">
                 <Alert.Heading>In Entwicklung</Alert.Heading>
-                <p>Das Formular zum Anlegen eines neuen Buchs wird in einem der nächsten Schritte implementiert.</p>
+                <p>
+                    Das Formular zum Anlegen eines neuen Buchs wird in einem der nächsten Schritte
+                    implementiert.
+                </p>
                 <p>Geplante Features:</p>
                 <ul>
                     <li>Eingabefelder für alle Buchdaten</li>

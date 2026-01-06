@@ -53,9 +53,7 @@ export function Header() {
                     </Nav>
 
                     {/* Rechte Seite: Login/User Menu */}
-                    <Nav>
-                        {isAuthenticated ? <UserMenu /> : <LoginButton />}
-                    </Nav>
+                    <Nav>{isAuthenticated ? <UserMenu /> : <LoginButton />}</Nav>
                 </Navbar.Collapse>
             </Container>
         </Navbar>

@@ -34,7 +34,9 @@ interface TokenPayload {
 
 // In development, use proxy to avoid CORS issues
 const IS_DEV = import.meta.env.DEV;
-const KEYCLOAK_URL = IS_DEV ? '/auth' : (import.meta.env.VITE_KEYCLOAK_URL || 'https://localhost:8843');
+const KEYCLOAK_URL = IS_DEV
+    ? '/auth'
+    : import.meta.env.VITE_KEYCLOAK_URL || 'https://localhost:8843';
 const REALM = import.meta.env.VITE_KEYCLOAK_REALM || 'nest';
 const CLIENT_ID = import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'nest-client';
 const CLIENT_SECRET = import.meta.env.VITE_KEYCLOAK_CLIENT_SECRET || '';

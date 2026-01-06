@@ -36,7 +36,10 @@ const parseErrorMessage = (error: Error): string => {
     }
 
     // Price validation
-    if (message.includes('preis') && (message.includes('must be a positive number') || message.includes('must not be less than'))) {
+    if (
+        message.includes('preis') &&
+        (message.includes('must be a positive number') || message.includes('must not be less than'))
+    ) {
         return 'Der Preis muss eine positive Zahl sein.';
     }
 
@@ -62,7 +65,10 @@ const parseErrorMessage = (error: Error): string => {
     }
 
     // Homepage/URL validation
-    if (message.includes('homepage') && (message.includes('must be a URL') || message.includes('must be an URL'))) {
+    if (
+        message.includes('homepage') &&
+        (message.includes('must be a URL') || message.includes('must be an URL'))
+    ) {
         return 'Die Homepage muss eine gültige URL sein (z.B. https://beispiel.de).';
     }
 
@@ -166,27 +172,27 @@ export function CreateBookPage() {
 
     // Remove schlagwort
     const handleRemoveSchlagwort = (wort: string) => {
-        setSchlagwoerter(schlagwoerter.filter(w => w !== wort));
+        setSchlagwoerter(schlagwoerter.filter((w) => w !== wort));
     };
 
     // Field validation handlers
     const validateIsbn = () => {
         if (!isbn.trim()) {
-            setFieldErrors(prev => ({ ...prev, isbn: 'ISBN ist ein Pflichtfeld.' }));
+            setFieldErrors((prev) => ({ ...prev, isbn: 'ISBN ist ein Pflichtfeld.' }));
         } else {
             // Remove hyphens and spaces for validation
             const cleanIsbn = isbn.replace(/[-\s]/g, '');
             // Check if it's a valid ISBN-10 or ISBN-13 format
             const isValidLength = cleanIsbn.length === 10 || cleanIsbn.length === 13;
             const isValidChars = /^[\dX]+$/i.test(cleanIsbn);
-            
+
             if (!isValidLength || !isValidChars) {
-                setFieldErrors(prev => ({ 
-                    ...prev, 
-                    isbn: 'ISBN muss eine gültige ISBN-10 (10 Ziffern) oder ISBN-13 (13 Ziffern) sein. Bindestriche sind erlaubt.' 
+                setFieldErrors((prev) => ({
+                    ...prev,
+                    isbn: 'ISBN muss eine gültige ISBN-10 (10 Ziffern) oder ISBN-13 (13 Ziffern) sein. Bindestriche sind erlaubt.',
                 }));
             } else {
-                setFieldErrors(prev => {
+                setFieldErrors((prev) => {
                     const { isbn: _isbn, ...rest } = prev;
                     return rest;
                 });
@@ -196,9 +202,9 @@ export function CreateBookPage() {
 
     const validateTitel = () => {
         if (!titel.trim()) {
-            setFieldErrors(prev => ({ ...prev, titel: 'Titel ist ein Pflichtfeld.' }));
+            setFieldErrors((prev) => ({ ...prev, titel: 'Titel ist ein Pflichtfeld.' }));
         } else {
-            setFieldErrors(prev => {
+            setFieldErrors((prev) => {
                 const { titel: _titel, ...rest } = prev;
                 return rest;
             });
@@ -207,13 +213,16 @@ export function CreateBookPage() {
 
     const validatePreis = () => {
         if (!preis) {
-            setFieldErrors(prev => ({ ...prev, preis: 'Preis ist ein Pflichtfeld.' }));
+            setFieldErrors((prev) => ({ ...prev, preis: 'Preis ist ein Pflichtfeld.' }));
         } else {
             const preisFloat = parseFloat(preis);
             if (isNaN(preisFloat) || preisFloat <= 0) {
-                setFieldErrors(prev => ({ ...prev, preis: 'Preis muss eine positive Zahl sein.' }));
+                setFieldErrors((prev) => ({
+                    ...prev,
+                    preis: 'Preis muss eine positive Zahl sein.',
+                }));
             } else {
-                setFieldErrors(prev => {
+                setFieldErrors((prev) => {
                     const { preis: _preis, ...rest } = prev;
                     return rest;
                 });
@@ -226,16 +235,19 @@ export function CreateBookPage() {
             // Simple URL validation
             const urlPattern = /^https?:\/\/.+/;
             if (!urlPattern.test(homepage)) {
-                setFieldErrors(prev => ({ ...prev, homepage: 'Homepage muss eine gültige URL sein (z.B. https://beispiel.de).' }));
+                setFieldErrors((prev) => ({
+                    ...prev,
+                    homepage: 'Homepage muss eine gültige URL sein (z.B. https://beispiel.de).',
+                }));
             } else {
-                setFieldErrors(prev => {
+                setFieldErrors((prev) => {
                     const { homepage: _homepage, ...rest } = prev;
                     return rest;
                 });
             }
         } else {
             // Clear error if field is empty (it's optional)
-            setFieldErrors(prev => {
+            setFieldErrors((prev) => {
                 const { homepage: _homepage, ...rest } = prev;
                 return rest;
             });
@@ -244,9 +256,9 @@ export function CreateBookPage() {
 
     const validateArt = () => {
         if (!art) {
-            setFieldErrors(prev => ({ ...prev, art: 'Buchart ist ein Pflichtfeld.' }));
+            setFieldErrors((prev) => ({ ...prev, art: 'Buchart ist ein Pflichtfeld.' }));
         } else {
-            setFieldErrors(prev => {
+            setFieldErrors((prev) => {
                 const { art: _art, ...rest } = prev;
                 return rest;
             });
@@ -324,7 +336,10 @@ export function CreateBookPage() {
             }
         } catch (err) {
             console.error('Create error:', err);
-            const errorMessage = err instanceof Error ? parseErrorMessage(err) : 'Ein unbekannter Fehler ist aufgetreten';
+            const errorMessage =
+                err instanceof Error
+                    ? parseErrorMessage(err)
+                    : 'Ein unbekannter Fehler ist aufgetreten';
             setError(errorMessage);
             // Scroll to bottom to show error
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
@@ -349,7 +364,9 @@ export function CreateBookPage() {
                         <Row>
                             <Col md={6} className="mb-3">
                                 <Form.Group controlId="isbn">
-                                    <Form.Label>ISBN <span className="text-danger">*</span></Form.Label>
+                                    <Form.Label>
+                                        ISBN <span className="text-danger">*</span>
+                                    </Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="z.B. 978-3-16-148410-0"
@@ -367,7 +384,9 @@ export function CreateBookPage() {
 
                             <Col md={6} className="mb-3">
                                 <Form.Group controlId="art">
-                                    <Form.Label>Buchart <span className="text-danger">*</span></Form.Label>
+                                    <Form.Label>
+                                        Buchart <span className="text-danger">*</span>
+                                    </Form.Label>
                                     <Form.Select
                                         value={art}
                                         onChange={(e) => setArt(e.target.value as Buchart)}
@@ -390,7 +409,9 @@ export function CreateBookPage() {
                         <Row>
                             <Col md={8} className="mb-3">
                                 <Form.Group controlId="titel">
-                                    <Form.Label>Titel <span className="text-danger">*</span></Form.Label>
+                                    <Form.Label>
+                                        Titel <span className="text-danger">*</span>
+                                    </Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Buchtitel"
@@ -439,7 +460,9 @@ export function CreateBookPage() {
                         <Row>
                             <Col md={4} className="mb-3">
                                 <Form.Group controlId="preis">
-                                    <Form.Label>Preis (€) <span className="text-danger">*</span></Form.Label>
+                                    <Form.Label>
+                                        Preis (€) <span className="text-danger">*</span>
+                                    </Form.Label>
                                     <Form.Control
                                         type="number"
                                         step="0.01"
@@ -600,7 +623,8 @@ export function CreateBookPage() {
             {success && (
                 <Alert variant="success" className="mt-3">
                     <i className="bi bi-check-circle me-2"></i>
-                    <strong>Erfolg!</strong> Das Buch wurde erfolgreich erstellt. Sie können ein weiteres Buch anlegen.
+                    <strong>Erfolg!</strong> Das Buch wurde erfolgreich erstellt. Sie können ein
+                    weiteres Buch anlegen.
                 </Alert>
             )}
 

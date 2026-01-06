@@ -84,7 +84,10 @@ export function SearchPage() {
         } catch (err) {
             // Handle "no books found" as empty result, not an error
             const errorMessage = err instanceof Error ? err.message : 'Ein Fehler ist aufgetreten';
-            if (errorMessage.includes('Keine Buecher gefunden') || errorMessage.includes('Keine Bücher gefunden')) {
+            if (
+                errorMessage.includes('Keine Buecher gefunden') ||
+                errorMessage.includes('Keine Bücher gefunden')
+            ) {
                 setBooks([]);
                 setTotalElements(0);
                 setError(null);
@@ -100,9 +103,7 @@ export function SearchPage() {
 
     const handleArtToggle = (art: Buchart) => {
         setSelectedArten((prev) =>
-            prev.includes(art)
-                ? prev.filter((a) => a !== art)
-                : [...prev, art]
+            prev.includes(art) ? prev.filter((a) => a !== art) : [...prev, art],
         );
     };
 
@@ -127,7 +128,7 @@ export function SearchPage() {
     const handleDelete = async (bookId: number, bookTitle: string) => {
         // Confirmation dialog
         const confirmed = window.confirm(
-            `Möchten Sie das Buch "${bookTitle}" wirklich löschen?\n\nDieser Vorgang kann nicht rückgängig gemacht werden.`
+            `Möchten Sie das Buch "${bookTitle}" wirklich löschen?\n\nDieser Vorgang kann nicht rückgängig gemacht werden.`,
         );
 
         if (!confirmed) {
@@ -346,16 +347,21 @@ export function SearchPage() {
                             <strong>
                                 {(() => {
                                     // Filter by selected arten client-side
-                                    const filteredBooks = selectedArten.length > 0
-                                        ? books.filter(book => book.art && selectedArten.includes(book.art))
-                                        : books;
+                                    const filteredBooks =
+                                        selectedArten.length > 0
+                                            ? books.filter(
+                                                  (book) =>
+                                                      book.art && selectedArten.includes(book.art),
+                                              )
+                                            : books;
                                     return filteredBooks.length;
                                 })()}
                             </strong>{' '}
                             von <strong>{totalElements}</strong>{' '}
-                            {totalElements === 1 ? 'Buch' : 'Bücher'} (Seite {currentPage + 1} von {totalPages})
+                            {totalElements === 1 ? 'Buch' : 'Bücher'} (Seite {currentPage + 1} von{' '}
+                            {totalPages})
                         </div>
-                        
+
                         {/* Pagination Controls */}
                         {totalPages > 1 && (
                             <div className="d-flex gap-2">
@@ -385,9 +391,12 @@ export function SearchPage() {
                     <div className="d-flex flex-column gap-3">
                         {(() => {
                             // Filter by selected arten client-side
-                            const filteredBooks = selectedArten.length > 0
-                                ? books.filter(book => book.art && selectedArten.includes(book.art))
-                                : books;
+                            const filteredBooks =
+                                selectedArten.length > 0
+                                    ? books.filter(
+                                          (book) => book.art && selectedArten.includes(book.art),
+                                      )
+                                    : books;
                             return filteredBooks;
                         })().map((book) => (
                             <Card key={book.id} className="shadow-sm">
@@ -419,7 +428,9 @@ export function SearchPage() {
                                                     </Badge>
                                                 )}
                                                 <Badge bg={book.lieferbar ? 'success' : 'danger'}>
-                                                    {book.lieferbar ? 'Lieferbar' : 'Nicht lieferbar'}
+                                                    {book.lieferbar
+                                                        ? 'Lieferbar'
+                                                        : 'Nicht lieferbar'}
                                                 </Badge>
                                                 <Badge bg="warning" text="dark">
                                                     {'⭐'.repeat(book.rating)} {book.rating}/5
@@ -430,7 +441,12 @@ export function SearchPage() {
                                                     <Button
                                                         variant="outline-danger"
                                                         size="sm"
-                                                        onClick={() => handleDelete(book.id, book.titel?.titel || 'Ohne Titel')}
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                book.id,
+                                                                book.titel?.titel || 'Ohne Titel',
+                                                            )
+                                                        }
                                                         disabled={loading}
                                                         title="Buch löschen"
                                                     >
@@ -439,16 +455,24 @@ export function SearchPage() {
                                                     </Button>
                                                 </div>
                                             )}
-                                            {book.schlagwoerter && book.schlagwoerter.length > 0 && (
-                                                <div className="mb-2">
-                                                    <small className="text-muted">Schlagwörter: </small>
-                                                    {book.schlagwoerter.map((tag, idx) => (
-                                                        <Badge key={idx} bg="light" text="dark" className="me-1">
-                                                            {tag}
-                                                        </Badge>
-                                                    ))}
-                                                </div>
-                                            )}
+                                            {book.schlagwoerter &&
+                                                book.schlagwoerter.length > 0 && (
+                                                    <div className="mb-2">
+                                                        <small className="text-muted">
+                                                            Schlagwörter:{' '}
+                                                        </small>
+                                                        {book.schlagwoerter.map((tag, idx) => (
+                                                            <Badge
+                                                                key={idx}
+                                                                bg="light"
+                                                                text="dark"
+                                                                className="me-1"
+                                                            >
+                                                                {tag}
+                                                            </Badge>
+                                                        ))}
+                                                    </div>
+                                                )}
 
                                             <div className="text-muted small">
                                                 Preis: <strong>{book.preis} €</strong>
@@ -482,4 +506,3 @@ export function SearchPage() {
         </Container>
     );
 }
-

@@ -41,7 +41,7 @@ function App() {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/suche" element={<SearchPage />} />
                     <Route path="/buch/:id" element={<DetailPage />} />
-                    
+
                     {/* Admin-Route - nur für Admins */}
                     <Route path="/buch-erstellen" element={<CreateBookPage />} />
 

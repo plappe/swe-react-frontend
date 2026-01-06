@@ -23,11 +23,11 @@ const GRAPHQL_URI = import.meta.env.VITE_GRAPHQL_URI || '/graphql';
 const customFetch: typeof fetch = (uri, options) => {
     const token = localStorage.getItem('auth_token');
     const headers = new Headers(options?.headers);
-    
+
     if (token) {
         headers.set('Authorization', `Bearer ${token}`);
     }
-    
+
     return fetch(uri, {
         ...options,
         headers,
