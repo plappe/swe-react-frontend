@@ -44,7 +44,9 @@ export function BookCard({ book, isAdmin, onDelete }: BookCardProps) {
                             )}
                             <div>Preis: {book.preis} €</div>
                             {book.rabatt && parseFloat(String(book.rabatt)) > 0 && (
-                                <div>Rabatt: {(parseFloat(String(book.rabatt)) * 100).toFixed(0)}%</div>
+                                <div>
+                                    Rabatt: {(parseFloat(String(book.rabatt)) * 100).toFixed(0)}%
+                                </div>
                             )}
                             {book.homepage && (
                                 <div>
