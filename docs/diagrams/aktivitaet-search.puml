@@ -1,0 +1,35 @@
+@startuml Aktivitätsdiagramm Suche
+
+title Aktivitätsdiagramm - Buchsuche
+
+start
+
+:SearchPage öffnen;
+:Suchkriterien eingeben (ISBN, Titel, Art, Rating, Lieferbar);
+:Button "Suchen" klicken;
+
+if (Mehrere Art-Typen gewählt?) then ([ja])
+  :Alle Seiten vom Backend laden;
+  :Client-seitig nach Art-Typen filtern;
+  :Ergebnisse paginieren (5 pro Seite);
+else ([nein])
+  :GraphQL Query mit Filtern senden;
+  :Backend gibt gefilterte Ergebnisse zurück;
+endif
+
+if (Bücher gefunden?) then ([ja])
+  :Bücher anzeigen (5 pro Seite);
+  
+  if (Mehr als 5 Bücher?) then ([ja])
+    :Pagination-Buttons anzeigen;
+  else ([nein])
+    :Keine Pagination;
+  endif
+  
+else ([nein])
+  :Meldung: Keine Bücher gefunden;
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,58 @@
+' Preview durch <Alt>D
+
+@startuml Zustandsdiagramm Admin
+
+title Zustandsdiagramm - Admin
+
+[*] --> HomePage : Anwendung starten (Admin eingeloggt)
+[*] --> SuchSeite : Menü "Suche"
+[*] --> BuchErstellen : Link "Buch erstellen"
+[*] --> [*] : Button "Abmelden"
+
+' --- Suche ---
+state SuchSeite {
+  [*] --> Suchformular : Suchkriterien eingeben
+  Suchformular --> Suchvorgang : Button "Suchen"
+  Suchvorgang --> FehlerSuche : Backend-Fehler
+  Suchvorgang --> KeineBuecher : keine Bücher gefunden
+  Suchvorgang --> Suchergebnisse : Bücher gefunden
+  FehlerSuche --> Suchformular : Fehlermeldung
+  KeineBuecher --> Suchformular : Zurücksetzen
+}
+
+state Suchergebnisse {
+  [*] --> Buecherliste : Bücher anzeigen (5 pro Seite)
+  Buecherliste --> Buecherliste : Pagination (Zurück/Weiter)
+  Buecherliste --> BuchLoeschen : Button "Löschen"
+  Buecherliste --> Suchformular : Button "Zurücksetzen"
+}
+
+' --- Buch löschen ---
+state BuchLoeschen {
+  [*] --> BestaetigungLoeschen : Bestätigungsdialog
+  BestaetigungLoeschen --> Buecherliste : "Abbrechen"
+  BestaetigungLoeschen --> LoeschenBackend : "Bestätigen"
+  LoeschenBackend --> Buecherliste : erfolgreich gelöscht
+  LoeschenBackend --> FehlerLoeschen : Fehler
+  FehlerLoeschen --> Buecherliste : Fehlermeldung
+}
+
+' --- Buch erstellen ---
+state BuchErstellen {
+  [*] --> BuchFormular : Formular anzeigen
+  BuchFormular --> FormularValidierung : Button "Buch erstellen"
+  FormularValidierung --> FehlerValidierung : ungültige Eingaben
+  FormularValidierung --> ErstellenBackend : Daten valide
+  FehlerValidierung --> BuchFormular : Fehlermeldungen
+  ErstellenBackend --> ErfolgErstellen : erfolgreich erstellt
+  ErstellenBackend --> FehlerErstellen : Backend-Fehler
+  ErfolgErstellen --> BuchFormular : Formular zurücksetzen
+  FehlerErstellen --> BuchFormular : Fehlermeldung
+}
+
+SuchSeite --> HomePage : Link "Home"
+SuchSeite --> BuchErstellen : Link "Buch erstellen"
+BuchErstellen --> HomePage : Link "Home"
+BuchErstellen --> SuchSeite : Link "Suche"
+
+@enduml

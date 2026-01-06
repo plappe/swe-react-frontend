@@ -1,0 +1,38 @@
+' Preview durch <Alt>D
+
+@startuml Zustandsdiagramm Visitor
+
+title Zustandsdiagramm - Visitor (Anonymer Benutzer)
+
+[*] --> HomePage : Anwendung starten
+HomePage --> LoginPage : Button "Anmelden"
+HomePage --> SuchSeite : Link "Zur Suche"
+
+' --- Login ---
+state LoginPage {
+  [*] --> LoginFormular : Formular anzeigen
+  LoginFormular --> LoginValidierung : Button "Anmelden"
+  LoginValidierung --> LoginFehler : ungültige Credentials
+  LoginValidierung --> HomePage : erfolgreicher Login
+  LoginFehler --> LoginFormular : Fehlermeldung
+}
+
+' --- Suche ---
+state SuchSeite {
+  [*] --> Suchformular : Suchkriterien eingeben
+  Suchformular --> Suchvorgang : Button "Suchen"
+  Suchvorgang --> KeineBuecher : keine Bücher gefunden
+  Suchvorgang --> Suchergebnisse : Bücher gefunden
+  KeineBuecher --> Suchformular : Zurücksetzen
+}
+
+state Suchergebnisse {
+  [*] --> Buecherliste : Bücher anzeigen (5 pro Seite)
+  Buecherliste --> Buecherliste : Pagination (Zurück/Weiter)
+  Buecherliste --> Suchformular : Button "Zurücksetzen"
+}
+
+SuchSeite --> HomePage : Link "Home"
+LoginPage --> HomePage : Link "Home"
+
+@enduml

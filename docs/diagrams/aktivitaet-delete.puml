@@ -1,0 +1,27 @@
+@startuml Aktivitätsdiagramm Buch Löschen
+
+title Aktivitätsdiagramm - Buch Löschen
+
+start
+
+:Suchergebnisse anzeigen;
+:Admin klickt "Löschen" Button;
+:Bestätigungsdialog anzeigen;
+
+if (Admin bestätigt?) then ([nein])
+  :Löschvorgang abgebrochen;
+  stop
+else ([ja])
+  :GraphQL Mutation LOESCHE_BUCH senden;
+  
+  if (Buch erfolgreich gelöscht?) then ([ja])
+    :Buch aus Liste entfernen;
+    :UI aktualisieren;
+  else ([nein])
+    :Fehlermeldung anzeigen;
+  endif
+endif
+
+stop
+
+@enduml

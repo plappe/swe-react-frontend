@@ -1,0 +1,36 @@
+@startuml Aktivitätsdiagramm Buch Erstellen
+
+title Aktivitätsdiagramm - Buch Erstellen
+
+start
+
+:CreateBookPage öffnen;
+
+if (Benutzer ist Admin?) then ([nein])
+  :Fehlermeldung: Keine Berechtigung;
+  stop
+else ([ja])
+  :Formular anzeigen;
+endif
+
+:Buchdaten eingeben (ISBN, Titel, Art, etc.);
+:Button "Buch erstellen" klicken;
+:Validierung der Eingaben;
+
+if (Daten gültig?) then ([ja])
+  :GraphQL Mutation ERSTELLE_BUCH senden;
+  
+  if (Buch erfolgreich erstellt?) then ([ja])
+    :Erfolgsmeldung anzeigen;
+    :Formular zurücksetzen;
+  else ([nein])
+    :Fehlermeldung anzeigen (z.B. ISBN bereits vorhanden);
+  endif
+  
+else ([nein])
+  :Fehlermeldung: Ungültige Eingaben;
+endif
+
+stop
+
+@enduml

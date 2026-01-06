@@ -1,0 +1,35 @@
+@startuml Aktivitätsdiagramm Login
+
+title Aktivitätsdiagramm - Login
+
+start
+
+:LoginPage öffnen;
+:Username und Passwort eingeben;
+:Button "Anmelden" klicken;
+
+if (Felder ausgefüllt?) then ([nein])
+  :Validierungsfehler anzeigen;
+  stop
+else ([ja])
+  :GraphQL Mutation LOGIN senden;
+  
+  if (Credentials korrekt?) then ([ja])
+    :Token in localStorage speichern;
+    :User-Objekt erstellen;
+    :Weiterleitung zur Startseite;
+    
+    if (User ist Admin?) then ([ja])
+      :Link "Buch erstellen" anzeigen;
+    else ([nein])
+      :Standardansicht;
+    endif
+    
+  else ([nein])
+    :Fehlermeldung: Ungültige Anmeldedaten;
+  endif
+endif
+
+stop
+
+@enduml

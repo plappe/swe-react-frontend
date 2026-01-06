@@ -1,0 +1,28 @@
+' Preview durch <Alt>D
+
+@startuml Zustandsdiagramm User
+
+title Zustandsdiagramm - User (Authentifizierter Benutzer)
+
+[*] --> HomePage : Anwendung starten (eingeloggt)
+HomePage --> SuchSeite : Link "Zur Suche"
+HomePage --> [*] : Button "Abmelden"
+
+' --- Suche ---
+state SuchSeite {
+  [*] --> Suchformular : Suchkriterien eingeben
+  Suchformular --> Suchvorgang : Button "Suchen"
+  Suchvorgang --> KeineBuecher : keine Bücher gefunden
+  Suchvorgang --> Suchergebnisse : Bücher gefunden
+  KeineBuecher --> Suchformular : Zurücksetzen
+}
+
+state Suchergebnisse {
+  [*] --> Buecherliste : Bücher anzeigen (5 pro Seite)
+  Buecherliste --> Buecherliste : Pagination (Zurück/Weiter)
+  Buecherliste --> Suchformular : Button "Zurücksetzen"
+}
+
+SuchSeite --> HomePage : Link "Home"
+
+@enduml

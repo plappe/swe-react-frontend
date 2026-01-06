@@ -15,7 +15,6 @@ import { Footer } from './components/layout/Footer';
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { SearchPage } from './pages/SearchPage';
-import { DetailPage } from './pages/DetailPage';
 import { CreateBookPage } from './pages/CreateBookPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
@@ -40,7 +39,6 @@ function App() {
                     <Route path="/" element={<HomePage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/suche" element={<SearchPage />} />
-                    <Route path="/buch/:id" element={<DetailPage />} />
 
                     {/* Admin-Route - nur für Admins */}
                     <Route path="/buch-erstellen" element={<CreateBookPage />} />
