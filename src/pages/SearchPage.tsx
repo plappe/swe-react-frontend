@@ -61,7 +61,11 @@ export function SearchPage() {
     const [error, setError] = useState<string | null>(null);
     const [hasSearched, setHasSearched] = useState(false);
 
-    const performSearch = async (criteria: BuchSuchkriterien, page: number = 0, multiArtFilter: string[] = []) => {
+    const performSearch = async (
+        criteria: BuchSuchkriterien,
+        page: number = 0,
+        multiArtFilter: string[] = [],
+    ) => {
         setLoading(true);
         setError(null);
 
@@ -98,7 +102,7 @@ export function SearchPage() {
 
                 // Filter by art types client-side
                 const filtered = allBooks.filter(
-                    (book) => book.art && multiArtFilter.includes(book.art)
+                    (book) => book.art && multiArtFilter.includes(book.art),
                 );
                 setTotalElements(filtered.length);
 
@@ -231,7 +235,8 @@ export function SearchPage() {
 
     // Determine if there are more pages based on actual data
     // If current page has fewer books than pageSize, we're on the last page
-    const hasNextPage = books.length === pageSize && currentPage < Math.ceil(totalElements / pageSize) - 1;
+    const hasNextPage =
+        books.length === pageSize && currentPage < Math.ceil(totalElements / pageSize) - 1;
 
     return (
         <Container className="py-5">
