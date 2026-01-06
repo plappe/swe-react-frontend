@@ -6,12 +6,13 @@
  */
 
 import { useState, FormEvent, useEffect } from 'react';
-import { Container, Form, Button, Alert, Card, Row, Col, Badge } from 'react-bootstrap';
+import { Container, Form, Button, Alert, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth';
 import { apolloClient } from '../graphql';
 import { ERSTELLE_BUCH } from '../graphql/mutations';
 import { Buchart } from '../types';
+import { BasicInfoFields, PriceFields, MetadataFields } from '../components/book';
 
 /**
  * Parse backend error messages and return user-friendly German messages
@@ -359,237 +360,47 @@ export function CreateBookPage() {
             <Card className="shadow-sm">
                 <Card.Body>
                     <Form onSubmit={handleSubmit}>
-                        {/* Basic Information */}
-                        <h5 className="mb-3">Grundinformationen</h5>
-                        <Row>
-                            <Col md={6} className="mb-3">
-                                <Form.Group controlId="isbn">
-                                    <Form.Label>
-                                        ISBN <span className="text-danger">*</span>
-                                    </Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="z.B. 978-3-16-148410-0"
-                                        value={isbn}
-                                        onChange={(e) => setIsbn(e.target.value)}
-                                        onBlur={validateIsbn}
-                                        isInvalid={!!fieldErrors.isbn}
-                                        required
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {fieldErrors.isbn}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-                            </Col>
+                        <BasicInfoFields
+                            isbn={isbn}
+                            setIsbn={setIsbn}
+                            titel={titel}
+                            setTitel={setTitel}
+                            untertitel={untertitel}
+                            setUntertitel={setUntertitel}
+                            art={art}
+                            setArt={setArt}
+                            rating={rating}
+                            setRating={setRating}
+                            fieldErrors={fieldErrors}
+                            onIsbnBlur={validateIsbn}
+                            onTitelBlur={validateTitel}
+                            onArtBlur={validateArt}
+                        />
 
-                            <Col md={6} className="mb-3">
-                                <Form.Group controlId="art">
-                                    <Form.Label>
-                                        Buchart <span className="text-danger">*</span>
-                                    </Form.Label>
-                                    <Form.Select
-                                        value={art}
-                                        onChange={(e) => setArt(e.target.value as Buchart)}
-                                        onBlur={validateArt}
-                                        isInvalid={!!fieldErrors.art}
-                                        required
-                                    >
-                                        <option value="">Auswählen...</option>
-                                        <option value={Buchart.PAPERBACK}>Paperback</option>
-                                        <option value={Buchart.HARDCOVER}>Hardcover</option>
-                                        <option value={Buchart.EPUB}>E-Book (EPUB)</option>
-                                    </Form.Select>
-                                    <Form.Control.Feedback type="invalid">
-                                        {fieldErrors.art}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-                            </Col>
-                        </Row>
+                        <PriceFields
+                            preis={preis}
+                            setPreis={setPreis}
+                            rabatt={rabatt}
+                            setRabatt={setRabatt}
+                            lieferbar={lieferbar}
+                            setLieferbar={setLieferbar}
+                            datum={datum}
+                            setDatum={setDatum}
+                            fieldErrors={fieldErrors}
+                            onPreisBlur={validatePreis}
+                        />
 
-                        <Row>
-                            <Col md={8} className="mb-3">
-                                <Form.Group controlId="titel">
-                                    <Form.Label>
-                                        Titel <span className="text-danger">*</span>
-                                    </Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="Buchtitel"
-                                        value={titel}
-                                        onChange={(e) => setTitel(e.target.value)}
-                                        onBlur={validateTitel}
-                                        isInvalid={!!fieldErrors.titel}
-                                        required
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {fieldErrors.titel}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-                            </Col>
-
-                            <Col md={4} className="mb-3">
-                                <Form.Group controlId="rating">
-                                    <Form.Label>Bewertung</Form.Label>
-                                    <Form.Select
-                                        value={rating}
-                                        onChange={(e) => setRating(Number(e.target.value))}
-                                    >
-                                        <option value={0}>Keine Bewertung</option>
-                                        <option value={1}>⭐ 1 Stern</option>
-                                        <option value={2}>⭐⭐ 2 Sterne</option>
-                                        <option value={3}>⭐⭐⭐ 3 Sterne</option>
-                                        <option value={4}>⭐⭐⭐⭐ 4 Sterne</option>
-                                        <option value={5}>⭐⭐⭐⭐⭐ 5 Sterne</option>
-                                    </Form.Select>
-                                </Form.Group>
-                            </Col>
-                        </Row>
-
-                        <Form.Group controlId="untertitel" className="mb-3">
-                            <Form.Label>Untertitel</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Optionaler Untertitel"
-                                value={untertitel}
-                                onChange={(e) => setUntertitel(e.target.value)}
-                            />
-                        </Form.Group>
-
-                        {/* Pricing */}
-                        <h5 className="mb-3 mt-4">Preisinformationen</h5>
-                        <Row>
-                            <Col md={4} className="mb-3">
-                                <Form.Group controlId="preis">
-                                    <Form.Label>
-                                        Preis (€) <span className="text-danger">*</span>
-                                    </Form.Label>
-                                    <Form.Control
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        placeholder="z.B. 29.99"
-                                        value={preis}
-                                        onChange={(e) => setPreis(e.target.value)}
-                                        onBlur={validatePreis}
-                                        isInvalid={!!fieldErrors.preis}
-                                        required
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {fieldErrors.preis}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-                            </Col>
-
-                            <Col md={4} className="mb-3">
-                                <Form.Group controlId="rabatt">
-                                    <Form.Label>Rabatt (0-1)</Form.Label>
-                                    <Form.Control
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        max="1"
-                                        placeholder="z.B. 0.1 für 10%"
-                                        value={rabatt}
-                                        onChange={(e) => setRabatt(e.target.value)}
-                                    />
-                                    <Form.Text className="text-muted">
-                                        Dezimalwert (0.1 = 10%, 0.2 = 20%)
-                                    </Form.Text>
-                                </Form.Group>
-                            </Col>
-
-                            <Col md={4} className="mb-3">
-                                <Form.Group controlId="lieferbar">
-                                    <Form.Label>Verfügbarkeit</Form.Label>
-                                    <Form.Check
-                                        type="switch"
-                                        label={lieferbar ? 'Lieferbar' : 'Nicht lieferbar'}
-                                        checked={lieferbar}
-                                        onChange={(e) => setLieferbar(e.target.checked)}
-                                        className="mt-2"
-                                    />
-                                </Form.Group>
-                            </Col>
-                        </Row>
-
-                        {/* Additional Information */}
-                        <h5 className="mb-3 mt-4">Zusatzinformationen</h5>
-                        <Row>
-                            <Col md={6} className="mb-3">
-                                <Form.Group controlId="datum">
-                                    <Form.Label>Datum</Form.Label>
-                                    <Form.Control
-                                        type="date"
-                                        value={datum}
-                                        onChange={(e) => setDatum(e.target.value)}
-                                    />
-                                </Form.Group>
-                            </Col>
-
-                            <Col md={6} className="mb-3">
-                                <Form.Group controlId="homepage">
-                                    <Form.Label>Homepage</Form.Label>
-                                    <Form.Control
-                                        type="url"
-                                        placeholder="https://..."
-                                        value={homepage}
-                                        onChange={(e) => setHomepage(e.target.value)}
-                                        onBlur={validateHomepage}
-                                        isInvalid={!!fieldErrors.homepage}
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {fieldErrors.homepage}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-                            </Col>
-                        </Row>
-
-                        {/* Schlagwörter */}
-                        <Form.Group className="mb-3">
-                            <Form.Label>Schlagwörter</Form.Label>
-                            <div className="d-flex gap-2 mb-2">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Schlagwort eingeben"
-                                    value={schlagwoerterInput}
-                                    onChange={(e) => setSchlagwoerterInput(e.target.value)}
-                                    onKeyPress={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            handleAddSchlagwort();
-                                        }
-                                    }}
-                                />
-                                <Button
-                                    variant="outline-primary"
-                                    onClick={handleAddSchlagwort}
-                                    disabled={!schlagwoerterInput.trim()}
-                                >
-                                    Hinzufügen
-                                </Button>
-                            </div>
-                            {schlagwoerter.length > 0 && (
-                                <div className="d-flex flex-wrap gap-2">
-                                    {schlagwoerter.map((wort, idx) => (
-                                        <Badge
-                                            key={idx}
-                                            bg="light"
-                                            text="dark"
-                                            className="d-flex align-items-center gap-1 px-2 py-1"
-                                        >
-                                            {wort}
-                                            <button
-                                                type="button"
-                                                onClick={() => handleRemoveSchlagwort(wort)}
-                                                className="btn-close btn-close-sm"
-                                                aria-label="Entfernen"
-                                                style={{ fontSize: '0.6rem' }}
-                                            />
-                                        </Badge>
-                                    ))}
-                                </div>
-                            )}
-                        </Form.Group>
+                        <MetadataFields
+                            homepage={homepage}
+                            setHomepage={setHomepage}
+                            schlagwoerterInput={schlagwoerterInput}
+                            setSchlagwoerterInput={setSchlagwoerterInput}
+                            schlagwoerter={schlagwoerter}
+                            onAddSchlagwort={handleAddSchlagwort}
+                            onRemoveSchlagwort={handleRemoveSchlagwort}
+                            fieldErrors={fieldErrors}
+                            onHomepageBlur={validateHomepage}
+                        />
 
                         {/* Action Buttons */}
                         <div className="d-flex gap-2 mt-4">
@@ -619,7 +430,7 @@ export function CreateBookPage() {
                 </Card.Body>
             </Card>
 
-            {/* Success Alert - at bottom */}
+            {/* Success Alert */}
             {success && (
                 <Alert variant="success" className="mt-3">
                     <i className="bi bi-check-circle me-2"></i>
@@ -628,7 +439,7 @@ export function CreateBookPage() {
                 </Alert>
             )}
 
-            {/* Error Alert - at bottom */}
+            {/* Error Alert */}
             {error && (
                 <Alert variant="danger" className="mt-3">
                     <i className="bi bi-exclamation-triangle me-2"></i>
