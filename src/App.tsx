@@ -6,6 +6,7 @@
  */
 
 import { Routes, Route } from 'react-router-dom';
+import { ProtectedRoute } from './auth';
 
 // Layout-Komponenten
 import { Header } from './components/layout/Header';
@@ -41,7 +42,14 @@ function App() {
                     <Route path="/suche" element={<SearchPage />} />
 
                     {/* Admin-Route - nur für Admins */}
-                    <Route path="/buch-erstellen" element={<CreateBookPage />} />
+                    <Route
+                        path="/buch-erstellen"
+                        element={
+                            <ProtectedRoute requiredRoles={['admin']}>
+                                <CreateBookPage />
+                            </ProtectedRoute>
+                        }
+                    />
 
                     {/* 404 - Seite nicht gefunden */}
                     <Route path="*" element={<NotFoundPage />} />

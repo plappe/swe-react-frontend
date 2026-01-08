@@ -5,10 +5,9 @@
  * zum Anlegen neuer Bücher über die GraphQL API.
  */
 
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent } from 'react';
 import { Container, Form, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../auth';
 import { apolloClient } from '../graphql';
 import { ERSTELLE_BUCH } from '../graphql/mutations';
 import { Buchart } from '../types';
@@ -52,8 +51,6 @@ interface CreateBuchVars {
 
 export function CreateBookPage() {
     const navigate = useNavigate();
-    const { user, isAuthenticated } = useAuth();
-    const isAdmin = isAuthenticated && user?.roles?.includes('admin');
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -72,13 +69,6 @@ export function CreateBookPage() {
     const [homepage, setHomepage] = useState('');
     const [schlagwoerterInput, setSchlagwoerterInput] = useState('');
     const [schlagwoerter, setSchlagwoerter] = useState<string[]>([]);
-
-    /** Nicht-Admins zur Startseite umleiten */
-    useEffect(() => {
-        if (!isAdmin) {
-            navigate('/');
-        }
-    }, [isAdmin, navigate]);
 
     const handleAddSchlagwort = () => {
         const trimmed = schlagwoerterInput.trim();
@@ -259,10 +249,6 @@ export function CreateBookPage() {
             setLoading(false);
         }
     };
-
-    if (!isAdmin) {
-        return null;
-    }
 
     return (
         <Container className="py-5">

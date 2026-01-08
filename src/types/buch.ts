@@ -101,27 +101,3 @@ export interface BuchSuchkriterien {
     lieferbar?: boolean;
     schlagwoerter?: string[];
 }
-
-/**
- * Pagination Informationen
- */
-export interface PageInfo {
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-    startCursor?: string;
-    endCursor?: string;
-}
-
-/**
- * Paginiertes Suchergebnis
- */
-export interface BuchConnection {
-    edges: BuchEdge[];
-    pageInfo: PageInfo;
-    totalCount: number;
-}
-
-export interface BuchEdge {
-    node: Buch;
-    cursor: string;
-}

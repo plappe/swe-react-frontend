@@ -53,37 +53,3 @@ export const SUCHE_BUECHER = gql`
         }
     }
 `;
-
-/**
- * Query: Einzelnes Buch nach ID
- *
- * Wird für die Detailansicht verwendet.
- * $id ist die ID des Buchs (Int!)
- */
-export const FINDE_BUCH_BY_ID = gql`
-    ${BUCH_FRAGMENT}
-    query FindeBuchById($id: Int!) {
-        buch(id: $id) {
-            ...BuchFields
-            abbildungen {
-                id
-                beschriftung
-                contentType
-            }
-        }
-    }
-`;
-
-/**
- * Query: Buch nach ISBN suchen
- *
- * ISBN ist eindeutig, daher max. 1 Ergebnis
- */
-export const FINDE_BUCH_BY_ISBN = gql`
-    ${BUCH_FRAGMENT}
-    query FindeBuchByIsbn($isbn: String!) {
-        buecher(suchparameter: { isbn: $isbn }) {
-            ...BuchFields
-        }
-    }
-`;

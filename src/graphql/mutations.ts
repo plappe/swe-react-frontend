@@ -9,7 +9,6 @@
  */
 
 import { gql } from '@apollo/client';
-import { BUCH_FRAGMENT } from './queries';
 
 /**
  * Mutation: Neues Buch erstellen
@@ -21,23 +20,6 @@ export const ERSTELLE_BUCH = gql`
     mutation ErstelleBuch($input: BuchInput!) {
         create(input: $input) {
             id
-        }
-    }
-`;
-
-/**
- * Mutation: Buch aktualisieren
- *
- * Benötigt:
- * - id: ID des zu aktualisierenden Buchs
- * - version: Optimistic Locking (verhindert Konflikte)
- * - input: Die neuen Daten
- */
-export const AKTUALISIERE_BUCH = gql`
-    ${BUCH_FRAGMENT}
-    mutation AktualisiereBuch($id: Int!, $version: Int!, $input: BuchUpdateInput!) {
-        update(id: $id, version: $version, input: $input) {
-            ...BuchFields
         }
     }
 `;
