@@ -8,6 +8,7 @@
 import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { AuthContext } from './AuthContext';
 import type { AuthContextType, User } from '../types';
+import { KEYCLOAK_CLIENT } from '../constants';
 import { loginWithPassword, logout as keycloakLogout, decodeToken } from './keycloakDirect';
 
 interface AuthProviderProps {
@@ -28,8 +29,10 @@ export function DirectAuthProvider({ children }: AuthProviderProps) {
     const extractUser = useCallback((accessToken: string): User => {
         const payload = decodeToken(accessToken);
 
-        // Extrahiere Client-spezifische Rollen
-        const clientRoles = payload.resource_access?.['nest-client']?.roles ?? [];
+        /** Extrahiere Client-spezifische Rollen */
+        const clientRoles =
+            (payload.resource_access as Record<string, { roles?: string[] }>)?.[KEYCLOAK_CLIENT]
+                ?.roles ?? [];
         const realmRoles = payload.realm_access?.roles ?? [];
         const allRoles = [...clientRoles, ...realmRoles];
 

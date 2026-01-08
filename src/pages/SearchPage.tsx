@@ -11,6 +11,7 @@ import { apolloClient } from '../graphql';
 import { SUCHE_BUECHER } from '../graphql/queries';
 import { LOESCHE_BUCH } from '../graphql/mutations';
 import { useAuth } from '../auth';
+import { ROLES, PAGINATION } from '../constants';
 import { type BuchSuchkriterien, type Buch, Buchart } from '../types';
 import { SearchFilters, BookCard, Pagination } from '../components/search';
 
@@ -41,7 +42,7 @@ interface DeleteBuchVars {
 
 export function SearchPage() {
     const { user, isAuthenticated } = useAuth();
-    const isAdmin = isAuthenticated && user?.roles?.includes('admin');
+    const isAdmin = isAuthenticated && user?.roles?.includes(ROLES.ADMIN);
 
     const [isbn, setIsbn] = useState('');
     const [titel, setTitel] = useState('');
@@ -49,8 +50,8 @@ export function SearchPage() {
     const [rating, setRating] = useState<number | ''>('');
     const [lieferbar, setLieferbar] = useState<boolean | ''>('');
 
-    const [currentPage, setCurrentPage] = useState(0);
-    const [pageSize] = useState(5);
+    const [currentPage, setCurrentPage] = useState<number>(PAGINATION.DEFAULT_PAGE);
+    const [pageSize] = useState(PAGINATION.DEFAULT_PAGE_SIZE);
     const [totalElements, setTotalElements] = useState(0);
     const [lastSearchCriteria, setLastSearchCriteria] = useState<BuchSuchkriterien | null>(null);
     const [lastMultiArtFilter, setLastMultiArtFilter] = useState<string[]>([]);

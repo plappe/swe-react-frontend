@@ -8,7 +8,7 @@ import { useState, FormEvent } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth';
-
+import { ROUTES } from '../../constants';
 export function LoginForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -25,7 +25,7 @@ export function LoginForm() {
 
         try {
             await login(username, password);
-            navigate('/'); // Redirect nach erfolgreicher Anmeldung
+            navigate(ROUTES.HOME);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Anmeldung fehlgeschlagen');
         } finally {

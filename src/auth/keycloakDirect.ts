@@ -6,6 +6,8 @@
  *
  */
 
+import { KEYCLOAK_CLIENT } from '../constants';
+
 interface TokenResponse {
     access_token: string;
     refresh_token: string;
@@ -20,11 +22,7 @@ interface TokenPayload {
     email?: string;
     given_name?: string;
     family_name?: string;
-    resource_access?: {
-        'nest-client'?: {
-            roles?: string[];
-        };
-    };
+    resource_access?: Record<string, { roles?: string[] }>;
     realm_access?: {
         roles?: string[];
     };
@@ -36,7 +34,7 @@ const KEYCLOAK_URL = IS_DEV
     ? '/auth'
     : import.meta.env.VITE_KEYCLOAK_URL || 'https://localhost:8843';
 const REALM = import.meta.env.VITE_KEYCLOAK_REALM || 'nest';
-const CLIENT_ID = import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'nest-client';
+const CLIENT_ID = import.meta.env.VITE_KEYCLOAK_CLIENT_ID || KEYCLOAK_CLIENT;
 const CLIENT_SECRET = import.meta.env.VITE_KEYCLOAK_CLIENT_SECRET || '';
 
 /**

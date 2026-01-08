@@ -6,13 +6,13 @@
 
 import { NavDropdown } from 'react-bootstrap';
 import { useAuth } from '../../auth';
+import { ROLES } from '../../constants';
 
 export function UserMenu() {
     const { user, logout } = useAuth();
 
-    // Extrahiere die Rolle aus den Keycloak-Rollen
-    // Suche nach 'admin' oder 'user' in den Rollen
-    const role = user?.roles?.find((r) => r === 'admin' || r === 'user') || 'user';
+    /** Bestimme die Hauptrolle des Benutzers für Anzeige */
+    const role = user?.roles?.find((r) => r === ROLES.ADMIN || r === ROLES.USER) || ROLES.USER;
 
     return (
         <NavDropdown

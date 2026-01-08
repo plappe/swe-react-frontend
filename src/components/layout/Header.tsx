@@ -8,6 +8,7 @@
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../auth';
+import { ROLES } from '../../constants';
 import { UserMenu } from './UserMenu';
 import { LoginButton } from './LoginButton';
 
@@ -21,7 +22,7 @@ import { LoginButton } from './LoginButton';
  */
 export function Header() {
     const { isAuthenticated, user } = useAuth();
-    const isAdmin = isAuthenticated && user?.roles?.includes('admin');
+    const isAdmin = isAuthenticated && user?.roles?.includes(ROLES.ADMIN);
 
     return (
         <Navbar bg="dark" variant="dark" expand="lg" sticky="top">

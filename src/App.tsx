@@ -7,6 +7,7 @@
 
 import { Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from './auth';
+import { ROUTES, ROLES } from './constants';
 
 // Layout-Komponenten
 import { Header } from './components/layout/Header';
@@ -37,15 +38,15 @@ function App() {
             <main className="flex-grow-1">
                 <Routes>
                     {/* Öffentliche Routen */}
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/suche" element={<SearchPage />} />
+                    <Route path={ROUTES.HOME} element={<HomePage />} />
+                    <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+                    <Route path={ROUTES.SEARCH} element={<SearchPage />} />
 
                     {/* Admin-Route - nur für Admins */}
                     <Route
-                        path="/buch-erstellen"
+                        path={ROUTES.CREATE_BOOK}
                         element={
-                            <ProtectedRoute requiredRoles={['admin']}>
+                            <ProtectedRoute requiredRoles={[ROLES.ADMIN]}>
                                 <CreateBookPage />
                             </ProtectedRoute>
                         }

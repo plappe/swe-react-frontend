@@ -7,6 +7,7 @@
 
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './useAuth';
+import { ROUTES } from '../constants';
 import { Spinner, Container } from 'react-bootstrap';
 import type { ReactNode } from 'react';
 
@@ -21,7 +22,7 @@ interface ProtectedRouteProps {
  *
  * Verwendung:
  * <Route path="/admin" element={
- *   <ProtectedRoute requiredRoles={['admin']}>
+ *   <ProtectedRoute requiredRoles={[ROLES.ADMIN]}>
  *     <AdminPage />
  *   </ProtectedRoute>
  * } />
@@ -44,7 +45,7 @@ export function ProtectedRoute({ children, requiredRoles = [] }: ProtectedRouteP
     /** Nicht eingeloggt -> zur Login-Seite weiterleiten */
     if (!isAuthenticated) {
         /** State speichert ursprüngliche URL für Redirect nach Login */
-        return <Navigate to="/login" state={{ from: location }} replace />;
+        return <Navigate to={ROUTES.LOGIN} state={{ from: location }} replace />;
     }
 
     /** Rollen prüfen (falls angegeben) */
@@ -53,7 +54,7 @@ export function ProtectedRoute({ children, requiredRoles = [] }: ProtectedRouteP
 
         if (!hasRequiredRole) {
             /** Keine Berechtigung -> zur Startseite */
-            return <Navigate to="/" replace />;
+            return <Navigate to={ROUTES.HOME} replace />;
         }
     }
 
