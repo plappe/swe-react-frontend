@@ -5,8 +5,8 @@ Eine Single Page Application (SPA) für die Buchverwaltung, entwickelt mit React
 ## 🛠️ Tech Stack
 
 | Kategorie | Technologie |
-|-----------|-------------|
-| **Web Framework** | React 18 + Vite |
+| --------- | ----------- |
+| **Web Framework** | React 19 + Vite 7 |
 | **Sprache** | TypeScript |
 | **CSS Framework** | Bootstrap 5 |
 | **API Client** | Apollo Client (GraphQL) |
@@ -15,71 +15,27 @@ Eine Single Page Application (SPA) für die Buchverwaltung, entwickelt mit React
 | **Linting** | ESLint 9 (Flat Config) |
 | **Formatierung** | Prettier |
 | **E2E Tests** | Playwright |
-| **Package Manager** | pnpm |
+| **Package Manager** | npm |
 | **Containerisierung** | Docker + NGINX |
 
-## 📁 Projektstruktur
+## ✨ Features
 
-```
-swe-react-frontend/
-├── .github/
-│   └── workflows/
-│       └── ci.yml              # GitHub Actions CI/CD Pipeline
-├── docker/
-│   ├── nginx.conf              # NGINX Konfiguration für HTTPS
-│   └── generate-certs.ps1      # Script für SSL-Zertifikate
-├── public/
-│   └── silent-check-sso.html   # Keycloak SSO Check
-├── src/
-│   ├── auth/                   # Keycloak Authentifizierung
-│   │   ├── AuthProvider.tsx    # Auth Context Provider
-│   │   ├── ProtectedRoute.tsx  # Route Guard
-│   │   └── keycloak.ts         # Keycloak Konfiguration
-│   ├── components/
-│   │   └── layout/             # Layout Komponenten
-│   │       ├── Header.tsx
-│   │       └── Footer.tsx
-│   ├── graphql/                # GraphQL Client & Queries
-│   │   ├── client.ts           # Apollo Client Setup
-│   │   ├── queries.ts          # GraphQL Queries
-│   │   └── mutations.ts        # GraphQL Mutations
-│   ├── pages/                  # Seiten-Komponenten
-│   │   ├── HomePage.tsx
-│   │   ├── LoginPage.tsx
-│   │   ├── SearchPage.tsx
-│   │   ├── DetailPage.tsx
-│   │   ├── CreatePage.tsx
-│   │   └── NotFoundPage.tsx
-│   ├── styles/                 # Globale Styles
-│   │   └── index.css
-│   ├── types/                  # TypeScript Typen
-│   │   ├── buch.ts
-│   │   └── auth.ts
-│   ├── App.tsx                 # Haupt-App mit Routing
-│   └── main.tsx                # Entry Point
-├── tests/
-│   └── e2e/                    # Playwright E2E Tests
-│       ├── fixtures.ts         # Test Fixtures
-│       ├── pages/              # Page Objects
-│       └── specs/              # Test Specs
-├── .env.development            # Entwicklungs-Umgebungsvariablen
-├── .env.production             # Produktions-Umgebungsvariablen
-├── docker-compose.yml          # Docker Compose Konfiguration
-├── Dockerfile                  # Multi-Stage Docker Build
-├── eslint.config.js            # ESLint Konfiguration
-├── playwright.config.ts        # Playwright Konfiguration
-├── tsconfig.json               # TypeScript Konfiguration
-└── vite.config.ts              # Vite Konfiguration
-```
+- **Buchsuche** mit erweiterten Filtern (ISBN, Titel, Art, Rating, Lieferbarkeit)
+- **Pagination** für Suchergebnisse
+- **Buch-Erstellung** mit Formularvalidierung (Admin-Bereich)
+- **Keycloak Integration** für Authentifizierung und Autorisierung
+- **Responsive Design** mit Bootstrap 5
+- **GraphQL API** für effiziente Datenabfragen
+- **E2E Tests** mit Playwright und Page Object Pattern
 
 ## 🚀 Schnellstart
 
 ### Voraussetzungen
 
 - Node.js >= 22
-- pnpm >= 9
+- npm >= 10
 - Docker (für Container-Deployment)
-- Backend läuft (NestJS + PostgreSQL + Keycloak)
+- Backend läuft auf `https://localhost:3000` (NestJS + PostgreSQL + Keycloak)
 
 ### Installation
 
@@ -89,13 +45,13 @@ git clone <repository-url>
 cd swe-react-frontend
 
 # Dependencies installieren
-pnpm install
+npm install
 
 # Entwicklungsserver starten
-pnpm dev
+npm run dev
 ```
 
-Die Anwendung ist dann unter `http://localhost:3000` erreichbar.
+Die Anwendung ist dann unter `http://localhost:5173` erreichbar.
 
 ### Umgebungsvariablen
 
@@ -111,16 +67,16 @@ VITE_KEYCLOAK_CLIENT_ID=buch-frontend
 ## 📜 Verfügbare Scripts
 
 | Script | Beschreibung |
-|--------|-------------|
-| `pnpm dev` | Startet Entwicklungsserver mit HMR |
-| `pnpm build` | Erstellt Production Build |
-| `pnpm preview` | Vorschau des Production Builds |
-| `pnpm lint` | ESLint Prüfung |
-| `pnpm lint:fix` | ESLint mit Auto-Fix |
-| `pnpm format` | Formatierung mit Prettier |
-| `pnpm format:check` | Formatierung prüfen |
-| `pnpm test:e2e` | E2E-Tests mit Playwright |
-| `pnpm test:e2e:ui` | E2E-Tests mit UI |
+| ------ | ----------- |
+| `npm run dev` | Startet Entwicklungsserver mit HMR |
+| `npm run build` | Erstellt Production Build |
+| `npm run preview` | Vorschau des Production Builds |
+| `npm run lint` | ESLint Prüfung |
+| `npm run lint:fix` | ESLint mit Auto-Fix |
+| `npm run format` | Formatierung mit Prettier |
+| `npm run format:check` | Formatierung prüfen |
+| `npm run test:e2e` | E2E-Tests mit Playwright |
+| `npm run test:e2e:ui` | E2E-Tests mit UI |
 
 ## 🐳 Docker Deployment
 
@@ -152,13 +108,13 @@ Die Anwendung ist dann unter `https://localhost` erreichbar.
 
 ```bash
 # Tests ausführen
-pnpm test:e2e
+npm run test:e2e
 
 # Tests mit UI
-pnpm test:e2e:ui
+npm run test:e2e:ui
 
 # Spezifischen Browser
-pnpm test:e2e --project=chromium
+npm run test:e2e -- --project=chromium
 ```
 
 ### Page Objects
@@ -183,15 +139,15 @@ Die Anwendung verwendet Keycloak für die Authentifizierung:
 1. **Login**: Benutzer wird zu Keycloak weitergeleitet
 2. **Token**: Nach erfolgreichem Login erhält die App ein JWT
 3. **Protected Routes**: Bestimmte Seiten erfordern Authentifizierung
-4. **Rollen**: Benutzer können verschiedene Rollen haben (z.B. admin)
+4. **Rollen**: Admin-Rolle für geschützte Bereiche (z.B. Buch-Erstellung)
 
-## 📝 Nächste Schritte
+## 📐 Architektur
 
-- [ ] Suchformular implementieren (Textfelder, Dropdown, Radiobuttons, Checkboxen)
-- [ ] Suchergebnisse mit Pagination anzeigen
-- [ ] Detailansicht für Bücher
-- [ ] Formular zum Anlegen neuer Bücher mit Validierung
-- [ ] Bearbeiten und Löschen von Büchern
+- **Component-Based**: Wiederverwendbare UI-Komponenten
+- **Page Objects**: Test-Pattern für bessere Wartbarkeit
+- **Context API**: Zentrale Authentifizierungsverwaltung
+- **GraphQL**: Typsichere API-Kommunikation
+- **Error Handling**: Deutsche Fehlermeldungen mit zentralem Error Parser
 
 ## 📚 Dokumentation
 
@@ -205,4 +161,4 @@ Die Anwendung verwendet Keycloak für die Authentifizierung:
 
 ---
 
-*SWE Projekt - Hochschule Karlsruhe*
+SWE Projekt - Hochschule Karlsruhe
