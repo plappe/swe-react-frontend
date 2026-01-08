@@ -1,5 +1,5 @@
 /**
- * Page Object: Login Page
+ * Page Object: LoginPage
  *
  * Kapselt die Login-Seite der Anwendung.
  */
@@ -9,7 +9,6 @@ import { Page, Locator } from '@playwright/test';
 export class LoginPage {
     readonly page: Page;
 
-    // Locators
     readonly heading: Locator;
     readonly loginButton: Locator;
     readonly errorAlert: Locator;
@@ -22,16 +21,12 @@ export class LoginPage {
         this.errorAlert = page.getByRole('alert');
     }
 
-    /**
-     * Navigiert zur Login-Seite
-     */
+    /** Zur Login-Seite navigieren */
     async goto() {
         await this.page.goto('/login');
     }
 
-    /**
-     * Klickt auf den Keycloak Login Button
-     */
+    /** Keycloak Login Button klicken */
     async clickLogin() {
         await this.loginButton.click();
     }

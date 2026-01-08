@@ -30,19 +30,19 @@ interface Fixtures {
  * });
  */
 export const test = base.extend<Fixtures>({
-    // Home Page Fixture
+    /** HomePage Fixture */
     homePage: async ({ page }, use) => {
         const homePage = new HomePage(page);
         await use(homePage);
     },
 
-    // Login Page Fixture
+    /** LoginPage Fixture */
     loginPage: async ({ page }, use) => {
         const loginPage = new LoginPage(page);
         await use(loginPage);
     },
 
-  // Search Page Fixture
+  /** SearchPage Fixture */
   searchPage: async ({ page }, use) => {
     const searchPage = new SearchPage(page);
     await use(searchPage);

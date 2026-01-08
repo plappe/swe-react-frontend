@@ -2,7 +2,6 @@
  * Home Page
  *
  * Die Startseite der Anwendung.
- * Komponiert aus wiederverwendbaren Komponenten.
  */
 
 import { Container } from 'react-bootstrap';

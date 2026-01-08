@@ -1,3 +1,9 @@
+/**
+ * BasicInfoFields - Grundinformationen für Bucherstellung
+ *
+ * Formularfelder für ISBN, Titel, Untertitel, Art und Rating.
+ */
+
 import { Form, Row, Col } from 'react-bootstrap';
 import { Buchart } from '../../types';
 

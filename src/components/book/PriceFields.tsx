@@ -1,3 +1,9 @@
+/**
+ * PriceFields - Preisinformationen für Bucherstellung
+ *
+ * Formularfelder für Preis, Rabatt, Lieferbarkeit und Datum.
+ */
+
 import { Form, Row, Col } from 'react-bootstrap';
 
 interface PriceFieldsProps {

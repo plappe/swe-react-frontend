@@ -1,3 +1,9 @@
+/**
+ * FormButtons - Aktionsbuttons für Formulare
+ *
+ * Submit- und Abbrechen-Button mit Loading-Status.
+ */
+
 import { Button } from 'react-bootstrap';
 
 interface FormButtonsProps {

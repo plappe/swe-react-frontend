@@ -10,7 +10,6 @@
 
 /**
  * Buchart Enum
- * Entspricht dem Prisma enum "Buchart"
  */
 export enum Buchart {
     EPUB = 'EPUB',
@@ -20,7 +19,6 @@ export enum Buchart {
 
 /**
  * Titel Interface
- * Entspricht dem Prisma model "Titel"
  */
 export interface Titel {
     id: number;
@@ -30,7 +28,6 @@ export interface Titel {
 
 /**
  * Abbildung Interface
- * Entspricht dem Prisma model "Abbildung"
  */
 export interface Abbildung {
     id: number;
@@ -40,9 +37,6 @@ export interface Abbildung {
 
 /**
  * Buch Interface
- * Entspricht dem Prisma model "Buch"
- *
- * Hinweis: GraphQL gibt Decimal als String zurück
  */
 export interface Buch {
     id: number;

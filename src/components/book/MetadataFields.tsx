@@ -1,3 +1,9 @@
+/**
+ * MetadataFields - Metadaten für Bucherstellung
+ *
+ * Formularfelder für Homepage und Schlagwörter mit dynamischer Verwaltung.
+ */
+
 import { Form, Button, Badge } from 'react-bootstrap';
 
 interface MetadataFieldsProps {

@@ -1,7 +1,7 @@
 /**
- * Page Object: Search Page
+ * Page Object: SearchPage
  *
- * Encapsulates the search page of the application.
+ * Kapselt die Buchsuchseite der Anwendung.
  */
 
 import { Page, Locator } from '@playwright/test';
@@ -9,7 +9,6 @@ import { Page, Locator } from '@playwright/test';
 export class SearchPage {
   readonly page: Page;
 
-  // Locators
   readonly heading: Locator;
   readonly isbnInput: Locator;
   readonly titelInput: Locator;
@@ -44,26 +43,21 @@ export class SearchPage {
     this.lieferbarNeinRadio = page.locator('#lieferbar-nein');
     this.searchButton = page.getByRole('button', { name: /^suchen$/i });
     this.resetButton = page.getByRole('button', { name: /zurücksetzen/i });
-    // Only select book result cards (cards with ISBN badge), not the filter card
+    /** Nur Buch-Karten auswählen (mit ISBN-Badge), nicht die Filter-Karte */
     this.resultCards = page.locator('.card:has(.badge)');
     this.resultCount = page.locator('text=/von.*bücher/i');
     this.nextPageButton = page.getByRole('button', { name: /weiter/i });
-    // Use locator to get the pagination "Zurück" button (btn-sm class and text "Zurück")
     this.prevPageButton = page.locator('button.btn-sm:has-text("Zurück")');
     this.pageInfo = page.locator('text=/seite \\d+ von \\d+/i');
     this.deleteButtons = page.getByRole('button', { name: /löschen/i });
   }
 
-  /**
-   * Navigate to search page
-   */
+  /** Zur Suchseite navigieren */
   async goto() {
     await this.page.goto('/suche');
   }
 
-  /**
-   * Perform a search with criteria
-   */
+  /** Suche mit Kriterien durchführen */
   async search(criteria: {
     isbn?: string;
     titel?: string;

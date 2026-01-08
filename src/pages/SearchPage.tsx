@@ -1,7 +1,8 @@
 /**
- * Search Page Component
+ * SearchPage - Suchseite für Bücher
  *
- * Ermöglicht die Suche nach Büchern mit verschiedenen Kriterien und Pagination.
+ * Ermöglicht Suche nach ISBN, Titel, Art, Rating und Lieferbarkeit.
+ * Unterstützt Pagination und Multi-Art-Filter mit clientseitiger Filterung.
  */
 
 import { useState, FormEvent } from 'react';
@@ -42,21 +43,18 @@ export function SearchPage() {
     const { user, isAuthenticated } = useAuth();
     const isAdmin = isAuthenticated && user?.roles?.includes('admin');
 
-    // Form state
     const [isbn, setIsbn] = useState('');
     const [titel, setTitel] = useState('');
     const [selectedArten, setSelectedArten] = useState<Buchart[]>([]);
     const [rating, setRating] = useState<number | ''>('');
     const [lieferbar, setLieferbar] = useState<boolean | ''>('');
 
-    // Pagination state
     const [currentPage, setCurrentPage] = useState(0);
     const [pageSize] = useState(5);
     const [totalElements, setTotalElements] = useState(0);
     const [lastSearchCriteria, setLastSearchCriteria] = useState<BuchSuchkriterien | null>(null);
     const [lastMultiArtFilter, setLastMultiArtFilter] = useState<string[]>([]);
 
-    // Results state
     const [books, setBooks] = useState<Buch[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -74,12 +72,11 @@ export function SearchPage() {
             const isMultipleArtFilter = multiArtFilter.length > 1;
 
             if (isMultipleArtFilter) {
-                // For multiple art filters, fetch all pages and filter client-side
+                /** Bei mehreren Art-Filtern: Alle Seiten laden und clientseitig filtern */
                 let allBooks: Buch[] = [];
                 let currentBackendPage = 1;
                 let hasMore = true;
 
-                // Fetch all pages
                 while (hasMore) {
                     const result = await apolloClient.query<SearchBooksData, SearchBooksVars>({
                         query: SUCHE_BUECHER,
@@ -96,29 +93,28 @@ export function SearchPage() {
                     const books = result.data?.buecher?.content || [];
                     allBooks = [...allBooks, ...books];
 
-                    // Check if there are more pages
                     hasMore = books.length === pageSize;
                     currentBackendPage++;
                 }
 
-                // Filter by art types client-side
+                /** Clientseitig nach Art filtern */
                 const filtered = allBooks.filter(
                     (book) => book.art && multiArtFilter.includes(book.art),
                 );
                 setTotalElements(filtered.length);
 
-                // Paginate filtered results
+                /** Gefilterte Ergebnisse paginieren */
                 const startIndex = page * pageSize;
                 const paginatedBooks = filtered.slice(startIndex, startIndex + pageSize);
                 setBooks(paginatedBooks);
             } else {
-                // Single art or no art filter - normal backend pagination
+                /** Einzelner oder kein Art-Filter: Normale Backend-Pagination */
                 const result = await apolloClient.query<SearchBooksData, SearchBooksVars>({
                     query: SUCHE_BUECHER,
                     variables: {
                         suchparameter: criteria,
                         pageable: {
-                            page: page + 1, // Backend expects 1-based page numbers
+                            page: page + 1,
                             size: pageSize,
                         },
                     },
@@ -131,7 +127,7 @@ export function SearchPage() {
 
             setCurrentPage(page);
         } catch (err) {
-            // Handle "no books found" as empty result, not an error
+            /** "Keine Bücher gefunden" als leeres Ergebnis behandeln, nicht als Fehler */
             const errorMessage = err instanceof Error ? err.message : 'Ein Fehler ist aufgetreten';
             if (
                 errorMessage.includes('Keine Buecher gefunden') ||
@@ -160,14 +156,14 @@ export function SearchPage() {
         e.preventDefault();
         setHasSearched(true);
 
-        // Build search criteria - now including art
+        /** Suchkriterien zusammenstellen */
         const criteria: BuchSuchkriterien = {};
         if (isbn.trim()) criteria.isbn = isbn.trim();
         if (titel.trim()) criteria.titel = titel.trim();
         if (rating !== '') criteria.rating = Number(rating);
         if (lieferbar !== '') criteria.lieferbar = lieferbar;
-        // Note: Backend only supports single art, not multiple
-        // If multiple arten selected, we still need client-side filtering
+
+        /** Backend unterstützt nur einzelne Art, bei mehreren clientseitig filtern */
         const multiArtFilter = selectedArten.length > 1 ? selectedArten : [];
         if (selectedArten.length === 1) {
             criteria.art = selectedArten[0];
@@ -192,7 +188,6 @@ export function SearchPage() {
     };
 
     const handleDelete = async (bookId: number, bookTitle: string) => {
-        // Confirmation dialog
         const confirmed = window.confirm(
             `Möchten Sie das Buch "${bookTitle}" wirklich löschen?\n\nDieser Vorgang kann nicht rückgängig gemacht werden.`,
         );
@@ -208,7 +203,6 @@ export function SearchPage() {
             });
 
             if (result.data?.delete?.success) {
-                // Remove book from list
                 setBooks((prevBooks) => prevBooks.filter((book) => book.id !== bookId));
                 setError(null);
             }
@@ -231,7 +225,6 @@ export function SearchPage() {
         setTotalElements(0);
     };
 
-    // Determine if there are more pages based on actual data
     const hasNextPage =
         books.length === pageSize && currentPage < Math.ceil(totalElements / pageSize) - 1;
 
@@ -239,7 +232,7 @@ export function SearchPage() {
         <Container className="py-5">
             <h2 className="mb-4">Buchsuche</h2>
 
-            {/* Search Form */}
+            {/* Suchformular */}
             <Card className="shadow-sm mb-4">
                 <Card.Body>
                     <h5 className="mb-3">Suchfilter</h5>
@@ -269,7 +262,7 @@ export function SearchPage() {
                 </Card.Body>
             </Card>
 
-            {/* Error Alert */}
+            {/* Fehler */}
             {error && (
                 <Alert variant="danger" className="mb-4">
                     <i className="bi bi-exclamation-triangle me-2"></i>
@@ -277,7 +270,7 @@ export function SearchPage() {
                 </Alert>
             )}
 
-            {/* Loading State */}
+            {/* Ladeindikator */}
             {loading && (
                 <Alert variant="info">
                     <i className="bi bi-hourglass-split me-2"></i>
@@ -285,7 +278,7 @@ export function SearchPage() {
                 </Alert>
             )}
 
-            {/* No Search Yet */}
+            {/* Noch keine Suche */}
             {!hasSearched && !loading && (
                 <Alert variant="secondary">
                     <i className="bi bi-info-circle me-2"></i>
@@ -293,7 +286,7 @@ export function SearchPage() {
                 </Alert>
             )}
 
-            {/* No Results */}
+            {/* Keine Ergebnisse */}
             {hasSearched && !loading && books.length === 0 && !error && (
                 <Alert variant="warning">
                     <i className="bi bi-search me-2"></i>
@@ -301,7 +294,7 @@ export function SearchPage() {
                 </Alert>
             )}
 
-            {/* Results */}
+            {/* Suchergebnisse */}
             {books.length > 0 && (
                 <div>
                     <Pagination

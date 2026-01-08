@@ -1,8 +1,8 @@
 /**
- * Create Book Page Component
+ * CreateBookPage - Seite zum Erstellen neuer Bücher
  *
- * Ermöglicht Admins das Erstellen neuer Bücher.
- * Nur für eingeloggte Admins zugänglich.
+ * Nur für Admins zugänglich. Bietet ein Formular mit Validierung
+ * zum Anlegen neuer Bücher über die GraphQL API.
  */
 
 import { useState, FormEvent, useEffect } from 'react';
@@ -21,7 +21,7 @@ import {
 } from '../components/book';
 import { parseErrorMessage } from '../utils/errorParser';
 
-// TypeScript interfaces für die GraphQL Mutation
+/** GraphQL Typen für die Buch-Erstellung */
 interface TitelInput {
     titel: string;
     untertitel?: string;
@@ -55,13 +55,11 @@ export function CreateBookPage() {
     const { user, isAuthenticated } = useAuth();
     const isAdmin = isAuthenticated && user?.roles?.includes('admin');
 
-    // Status states für Formular
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-    // Formular Felder
     const [isbn, setIsbn] = useState('');
     const [titel, setTitel] = useState('');
     const [untertitel, setUntertitel] = useState('');
@@ -75,14 +73,13 @@ export function CreateBookPage() {
     const [schlagwoerterInput, setSchlagwoerterInput] = useState('');
     const [schlagwoerter, setSchlagwoerter] = useState<string[]>([]);
 
-    // Redirect wenn nicht Admin
+    /** Nicht-Admins zur Startseite umleiten */
     useEffect(() => {
         if (!isAdmin) {
             navigate('/');
         }
     }, [isAdmin, navigate]);
 
-    // Schlagwort hinzufügen
     const handleAddSchlagwort = () => {
         const trimmed = schlagwoerterInput.trim();
         if (trimmed && !schlagwoerter.includes(trimmed)) {
@@ -91,12 +88,11 @@ export function CreateBookPage() {
         }
     };
 
-    // Schlagwort entfernen
     const handleRemoveSchlagwort = (wort: string) => {
         setSchlagwoerter(schlagwoerter.filter((w) => w !== wort));
     };
 
-    // Validierung: ISBN
+    /** ISBN Validierung: 10 oder 13 Ziffern */
     const validateIsbn = () => {
         if (!isbn.trim()) {
             setFieldErrors((prev) => ({ ...prev, isbn: 'ISBN ist ein Pflichtfeld.' }));
@@ -119,7 +115,6 @@ export function CreateBookPage() {
         }
     };
 
-    // Validierung: Titel
     const validateTitel = () => {
         if (!titel.trim()) {
             setFieldErrors((prev) => ({ ...prev, titel: 'Titel ist ein Pflichtfeld.' }));
@@ -131,7 +126,7 @@ export function CreateBookPage() {
         }
     };
 
-    // Validierung: Preis
+    /** Preis muss positiv sein */
     const validatePreis = () => {
         if (!preis) {
             setFieldErrors((prev) => ({ ...prev, preis: 'Preis ist ein Pflichtfeld.' }));
@@ -151,7 +146,6 @@ export function CreateBookPage() {
         }
     };
 
-    // Validierung: Homepage
     const validateHomepage = () => {
         if (homepage && homepage.trim()) {
             const urlPattern = /^https?:\/\/.+/;
@@ -174,7 +168,7 @@ export function CreateBookPage() {
         }
     };
 
-    // Validierung: Art
+    /** Buchart ist Pflichtfeld */
     const validateArt = () => {
         if (!art) {
             setFieldErrors((prev) => ({ ...prev, art: 'Buchart ist ein Pflichtfeld.' }));
@@ -186,7 +180,7 @@ export function CreateBookPage() {
         }
     };
 
-    // Formular Submit Handler
+    /** Formular absenden und Buch erstellen */
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -194,18 +188,15 @@ export function CreateBookPage() {
         setSuccess(false);
 
         try {
-            // Validiere Pflichtfelder
             if (!isbn || !titel || !preis || !art) {
                 throw new Error('ISBN, Titel, Preis und Buchart sind Pflichtfelder');
             }
 
-            // Konvertiere Preis zu Float
             const preisFloat = parseFloat(preis);
             if (isNaN(preisFloat) || preisFloat < 0) {
                 throw new Error('Preis muss eine positive Zahl sein');
             }
 
-            // Konvertiere Rabatt zu Float (optional)
             let rabattFloat = 0;
             if (rabatt) {
                 rabattFloat = parseFloat(rabatt);
@@ -214,13 +205,12 @@ export function CreateBookPage() {
                 }
             }
 
-            // Konvertiere Datum zu ISO-8601 DateTime Format
             let datumISO: string | undefined = undefined;
             if (datum) {
                 datumISO = `${datum}T00:00:00.000Z`;
             }
 
-            // Erstelle Input Objekt für GraphQL Mutation
+            /** GraphQL Mutation Input */
             const input: BuchInput = {
                 isbn,
                 titel: {
@@ -237,16 +227,13 @@ export function CreateBookPage() {
                 schlagwoerter: schlagwoerter.length > 0 ? schlagwoerter : undefined,
             };
 
-            // Sende GraphQL Mutation
             const result = await apolloClient.mutate<CreateBuchData, CreateBuchVars>({
                 mutation: ERSTELLE_BUCH,
                 variables: { input },
             });
 
-            // Bei Erfolg: Formular zurücksetzen und Erfolg anzeigen
             if (result.data?.create?.id) {
                 setSuccess(true);
-                // Reset alle Felder
                 setIsbn('');
                 setTitel('');
                 setUntertitel('');

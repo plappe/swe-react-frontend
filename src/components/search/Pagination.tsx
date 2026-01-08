@@ -1,3 +1,9 @@
+/**
+ * Pagination - Seitennavigation
+ *
+ * Zurück/Weiter-Buttons für Pagination mit deaktivierten Zuständen.
+ */
+
 import { Button } from 'react-bootstrap';
 
 interface PaginationProps {

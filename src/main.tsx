@@ -28,16 +28,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // Bootstrap Icons für Avatar und Icons
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
-/**
- * React 18 verwendet createRoot statt ReactDOM.render
- *
- * Die Struktur der Provider ist wichtig:
- * 1. StrictMode - Entwicklungshelfer (findet potenzielle Probleme)
- * 2. ApolloProvider - Macht GraphQL-Client verfügbar
- * 3. BrowserRouter - Ermöglicht Client-Side Routing
- * 4. AuthProvider - Verwaltet Keycloak-Authentifizierung
- * 5. App - Die eigentliche Anwendung
- */
 const rootElement = document.getElementById('root');
 
 if (!rootElement) {

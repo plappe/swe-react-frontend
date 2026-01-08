@@ -1,3 +1,9 @@
+/**
+ * SearchFilters - Suchfilter für Buchsuche
+ *
+ * Formularfelder für ISBN, Titel, Art, Rating und Lieferbarkeit.
+ */
+
 import { Form, Row, Col } from 'react-bootstrap';
 import { Buchart } from '../../types';
 

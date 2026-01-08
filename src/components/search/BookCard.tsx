@@ -1,3 +1,9 @@
+/**
+ * BookCard - Darstellung eines Buches
+ *
+ * Zeigt Buchinformationen an mit optionaler Lösch-Funktion für Admins.
+ */
+
 import { Card, Badge, Button } from 'react-bootstrap';
 import { type Buch } from '../../types';
 

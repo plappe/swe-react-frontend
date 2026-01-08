@@ -1,26 +1,21 @@
 /**
- * E2E Tests: Create Book Functionality (Admin Only)
+ * E2E Tests: Buch-Erstellung (nur für Admins)
  *
- * Tests for creating new books - requires admin authentication.
+ * Tests für das Erstellen neuer Bücher - erfordert Admin-Authentifizierung.
  */
 
 import { test, expect } from '../fixtures';
 
-// Note: These tests assume you're running against a backend with test authentication
-// You may need to adjust based on your actual authentication setup
-
 test.describe('Create Book Page', () => {
   test('should redirect non-admin users to home', async ({ page, createBookPage }) => {
-    // Try to access create page without authentication
     await createBookPage.goto();
 
-    // Should redirect to home
+    /** Sollte zur Startseite umleiten */
     await page.waitForURL('/', { timeout: 5000 });
   });
 
-  // Skip admin tests if no auth is set up
+  /** Admin-Tests werden übersprungen, da keine Auth konfiguriert ist */
   test.skip('should display create book form for admin', async ({ createBookPage }) => {
-    // TODO: Set up admin authentication in beforeEach
     await createBookPage.goto();
 
     await expect(createBookPage.heading).toBeVisible();
@@ -30,21 +25,17 @@ test.describe('Create Book Page', () => {
   });
 
   test.skip('should validate required fields', async ({ createBookPage }) => {
-    // TODO: Set up admin authentication
     await createBookPage.goto();
 
-    // Leave ISBN empty and blur
     await createBookPage.isbnInput.click();
     await createBookPage.titelInput.click();
 
-    // Should show validation error
+    /** Sollte Validierungsfehler anzeigen */
     await expect(createBookPage.isbnInput).toHaveClass(/is-invalid/);
 
-    // Leave Titel empty and blur
     await createBookPage.titelInput.click();
     await createBookPage.preisInput.click();
 
-    // Should show validation error
     await expect(createBookPage.titelInput).toHaveClass(/is-invalid/);
 
     // Leave Preis empty and blur

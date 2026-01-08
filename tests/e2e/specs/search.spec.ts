@@ -1,7 +1,7 @@
 /**
- * E2E Tests: Search Functionality
+ * E2E Tests: Such-Funktionalität
  *
- * Tests for the book search page including filters and pagination.
+ * Tests für die Buchsuchseite mit Filtern und Paginierung.
  */
 
 import { test, expect } from '../fixtures';
@@ -19,64 +19,63 @@ test.describe('Search Page', () => {
   test('should show all books when searching without filters', async ({ searchPage }) => {
     await searchPage.searchButton.click();
 
-    // Wait for results or error
     await searchPage.page.waitForTimeout(1000);
 
-    // Check if we got an error (no backend) or results
+    /** Prüfe ob Backend-Fehler angezeigt wird */
     const errorVisible = await searchPage.page.locator('.alert-danger').isVisible();
     
-    // Skip assertion if backend is not available (CI without backend)
+    /** Überspringe Test wenn Backend nicht verfügbar (CI ohne Backend) */
     if (errorVisible) {
       test.skip();
       return;
     }
 
-    // Should show results when backend is available
+    /** Sollte Ergebnisse zeigen wenn Backend verfügbar */
     const count = await searchPage.getResultCount();
     expect(count).toBeGreaterThan(0);
   });
 
   test('should filter by ISBN and show results', async ({ searchPage }) => {
-    // First search without filters to get existing ISBNs
+    /** Zuerst ohne Filter suchen um vorhandene ISBNs zu finden */
     await searchPage.searchButton.click();
     await searchPage.page.waitForTimeout(1000);
 
     const count = await searchPage.getResultCount();
     if (count > 0) {
-      // Get an actual ISBN from the results
+      /** Hole eine echte ISBN aus den Ergebnissen */
       const isbnBadge = searchPage.page.locator('.badge:has-text("ISBN:")').first();
       const isbnText = await isbnBadge.textContent();
       const isbn = isbnText?.replace('ISBN:', '').trim();
 
       if (isbn) {
-        // Now search specifically for this ISBN
+        /** Suche gezielt nach dieser ISBN */
         await searchPage.reset();
         await searchPage.search({ isbn });
         await searchPage.page.waitForTimeout(1000);
 
-        // Should find the book
+        /** Sollte das Buch finden */
         const resultCount = await searchPage.getResultCount();
         expect(resultCount).toBeGreaterThanOrEqual(1);
 
-        // Should display the ISBN in results
+        /** Sollte ISBN in Ergebnissen anzeigen */
         await expect(searchPage.page.locator(`.badge:has-text("${isbn}")`)).toBeVisible();
       }
     }
   });
 
   test('should filter by title', async ({ searchPage }) => {
-    // First search to get available titles
+    /** Zuerst suchen um verfügbare Titel zu finden */
     await searchPage.searchButton.click();
     await searchPage.page.waitForTimeout(1000);
 
     const count = await searchPage.getResultCount();
     if (count > 0) {
-      // Get a title from the results
+      /** Hole einen Titel aus den Ergebnissen */
       const titleElement = searchPage.resultCards.first().locator('h5');
       const titleText = await titleElement.textContent();
 
       if (titleText && titleText !== 'Ohne Titel') {
-        // Search for first few characters of the title
+        /** Suche nach den ersten Zeichen des Titels */
         const searchTerm = titleText.substring(0, 3);
 
         await searchPage.reset();
@@ -95,11 +94,10 @@ test.describe('Search Page', () => {
     await searchPage.page.waitForTimeout(1000);
 
     const count = await searchPage.getResultCount();
-    // Either we find books or we don't - the filter should work
     expect(count).toBeGreaterThanOrEqual(0);
 
     if (count > 0) {
-      // Should show PAPERBACK badge in at least one result
+      /** Sollte PAPERBACK Badge in mindestens einem Ergebnis zeigen */
       await expect(searchPage.page.locator('.badge:has-text("PAPERBACK")').first()).toBeVisible();
     }
   });
@@ -119,7 +117,7 @@ test.describe('Search Page', () => {
     await searchPage.page.waitForTimeout(1000);
 
     const count = await searchPage.getResultCount();
-    expect(count).toBeGreaterThanOrEqual(0); // May be 0 if no books with rating >= 4
+    expect(count).toBeGreaterThanOrEqual(0);
   });
 
   test('should filter by availability using radio buttons', async ({ searchPage }) => {
@@ -132,51 +130,51 @@ test.describe('Search Page', () => {
   });
 
   test('should reset search form', async ({ searchPage }) => {
-    // Fill form
+    /** Formular ausfüllen */
     await searchPage.isbnInput.fill('123');
     await searchPage.titelInput.fill('Test');
 
-    // Reset
+    /** Zurücksetzen */
     await searchPage.reset();
 
-    // Fields should be empty
+    /** Felder sollten leer sein */
     await expect(searchPage.isbnInput).toHaveValue('');
     await expect(searchPage.titelInput).toHaveValue('');
   });
 
   test('should navigate through pages', async ({ searchPage }) => {
-    // Search for all books
+    /** Alle Bücher suchen */
     await searchPage.searchButton.click();
 
     await searchPage.page.waitForTimeout(1000);
 
-    // Check if pagination is available
+    /** Prüfe ob Pagination verfügbar */
     const nextButtonVisible = await searchPage.nextPageButton.isVisible().catch(() => false);
 
     if (nextButtonVisible) {
       const nextButtonEnabled = await searchPage.nextPageButton.isEnabled();
 
       if (nextButtonEnabled) {
-        // Get first book's title on page 1
+        /** Hole Titel des ersten Buches auf Seite 1 */
         const firstBookTitle = await searchPage.resultCards.first().locator('h5').textContent();
 
-        // Go to next page
+        /** Gehe zur nächsten Seite */
         await searchPage.goToNextPage();
 
         await searchPage.page.waitForTimeout(1000);
 
-        // Get first book's title on page 2
+        /** Hole Titel des ersten Buches auf Seite 2 */
         const secondPageFirstTitle = await searchPage.resultCards.first().locator('h5').textContent();
         
-        // Titles should be different
+        /** Titel sollten unterschiedlich sein */
         expect(secondPageFirstTitle).not.toBe(firstBookTitle);
 
-        // Go back to first page
+        /** Zurück zur ersten Seite */
         await searchPage.goToPreviousPage();
 
         await searchPage.page.waitForTimeout(1000);
 
-        // Should show original book
+        /** Sollte ursprüngliches Buch zeigen */
         const backToFirstTitle = await searchPage.resultCards.first().locator('h5').textContent();
         expect(backToFirstTitle).toBe(firstBookTitle);
       }
@@ -191,7 +189,7 @@ test.describe('Search Page', () => {
     const count = await searchPage.getResultCount();
 
     if (count > 0) {
-      // Should show result count info (e.g., "5 von 10 Bücher")
+      /** Sollte Ergebnis-Anzahl anzeigen (z.B. "5 von 10 Bücher") */
       await expect(searchPage.resultCount).toBeVisible();
     }
   });
@@ -201,16 +199,16 @@ test.describe('Search Page', () => {
 
     await searchPage.page.waitForTimeout(1000);
 
-    // Check if we got an error (no backend)
+    /** Prüfe ob Backend-Fehler angezeigt wird */
     const errorVisible = await searchPage.page.locator('.alert-danger').isVisible();
     
-    // Skip if backend is not available (CI without backend)
+    /** Überspringe wenn Backend nicht verfügbar */
     if (errorVisible) {
       test.skip();
       return;
     }
 
-    // Should show no results alert when backend returns empty
+    /** Sollte "Keine Bücher gefunden" Meldung zeigen */
     await expect(
       searchPage.page.locator('text=/keine bücher gefunden/i')
     ).toBeVisible();
@@ -226,7 +224,7 @@ test.describe('Search Page', () => {
     if (count > 0) {
       const firstCard = searchPage.resultCards.first();
 
-      // Should show book information - ISBN in badge and price text
+      /** Sollte Buchinformationen anzeigen - ISBN Badge und Preis */
       await expect(firstCard.locator('text=/ISBN:/i')).toBeVisible();
       await expect(firstCard.locator('text=/€/i')).toBeVisible();
     }

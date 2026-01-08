@@ -1,3 +1,9 @@
+/**
+ * FormAlerts - Erfolgs- und Fehlermeldungen
+ *
+ * Zeigt Erfolgs- oder Fehlermeldungen nach Formular-Submit an.
+ */
+
 import { Alert } from 'react-bootstrap';
 
 interface FormAlertsProps {

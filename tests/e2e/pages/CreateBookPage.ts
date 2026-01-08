@@ -1,7 +1,7 @@
 /**
- * Page Object: Create Book Page
+ * Page Object: CreateBookPage
  *
- * Encapsulates the Create Book page (admin only).
+ * Kapselt die Buch-Erstellungsseite (nur für Admins).
  */
 
 import { Page, Locator } from '@playwright/test';
@@ -9,7 +9,6 @@ import { Page, Locator } from '@playwright/test';
 export class CreateBookPage {
   readonly page: Page;
 
-  // Locators
   readonly heading: Locator;
   readonly isbnInput: Locator;
   readonly titelInput: Locator;
@@ -46,16 +45,12 @@ export class CreateBookPage {
     this.errorAlert = page.locator('.alert-danger');
   }
 
-  /**
-   * Navigate to create book page
-   */
+  /** Zur Buch-Erstellungsseite navigieren */
   async goto() {
     await this.page.goto('/buch-erstellen');
   }
 
-  /**
-   * Fill in book creation form
-   */
+  /** Formular zum Erstellen eines Buches ausfüllen */
   async fillBookForm(data: {
     isbn: string;
     titel: string;
