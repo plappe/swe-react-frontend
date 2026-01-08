@@ -4,8 +4,6 @@
  * Verwendet den "Direct Access Grants" Flow (Resource Owner Password Credentials)
  * für Clients mit "Client authentication ON".
  *
- * HINWEIS: Dies ist nur für Entwicklung/Lernen geeignet!
- * In Produktion sollte man den Authorization Code Flow mit PKCE verwenden.
  */
 
 interface TokenResponse {
@@ -32,7 +30,7 @@ interface TokenPayload {
     };
 }
 
-// In development, use proxy to avoid CORS issues
+/** In Entwicklung Proxy verwenden um CORS-Probleme zu vermeiden */
 const IS_DEV = import.meta.env.DEV;
 const KEYCLOAK_URL = IS_DEV
     ? '/auth'

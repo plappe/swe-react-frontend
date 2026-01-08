@@ -37,7 +37,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [token, setToken] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    // Ref to track if Keycloak is already initialized (prevents double init in StrictMode)
+    /** Ref um zu tracken ob Keycloak bereits initialisiert wurde (verhindert doppelte Init in StrictMode) */
     const isInitialized = useRef(false);
 
     /**
@@ -131,7 +131,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
      * Keycloak initialisieren beim App-Start
      */
     useEffect(() => {
-        // Prevent double initialization in React StrictMode
+        /** Verhindere doppelte Initialisierung in React StrictMode */
         if (isInitialized.current) {
             return;
         }
@@ -183,7 +183,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 });
         };
 
-        // Cleanup bei Unmount
+        /** Cleanup bei Unmount */
         return () => {
             keycloak.onTokenExpired = undefined;
         };

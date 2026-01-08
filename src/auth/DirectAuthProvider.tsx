@@ -84,7 +84,7 @@ export function DirectAuthProvider({ children }: AuthProviderProps) {
         } catch (err) {
             console.error('Logout error:', err);
         } finally {
-            // Immer State clearen
+            /** Immer State clearen */
             setIsAuthenticated(false);
             setUser(null);
             setToken(null);
@@ -100,13 +100,12 @@ export function DirectAuthProvider({ children }: AuthProviderProps) {
     const getToken = useCallback(async (): Promise<string | null> => {
         if (!token || !refreshTokenValue) return null;
 
-        // TODO: Prüfe ob Token bald abläuft und refreshe wenn nötig
-        // Für jetzt geben wir einfach den aktuellen Token zurück
+        /** TODO: Token-Ablauf prüfen und bei Bedarf refreshen */
         return token;
     }, [token, refreshTokenValue]);
 
     /**
-     * Beim App-Start: Prüfe ob Token im LocalStorage vorhanden ist
+     * Beim App-Start: Token aus LocalStorage wiederherstellen
      */
     useEffect(() => {
         const savedToken = localStorage.getItem('auth_token');
@@ -120,7 +119,7 @@ export function DirectAuthProvider({ children }: AuthProviderProps) {
                 setRefreshTokenValue(savedRefreshToken);
                 setIsAuthenticated(true);
             } catch {
-                // Token ungültig, clearen
+                /** Token ungültig, aus LocalStorage entfernen */
                 localStorage.removeItem('auth_token');
                 localStorage.removeItem('refresh_token');
             }

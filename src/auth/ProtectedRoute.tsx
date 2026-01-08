@@ -41,22 +41,22 @@ export function ProtectedRoute({ children, requiredRoles = [] }: ProtectedRouteP
         );
     }
 
-    // Nicht eingeloggt -> zur Login-Seite weiterleiten
+    /** Nicht eingeloggt -> zur Login-Seite weiterleiten */
     if (!isAuthenticated) {
-        // state speichert die ursprüngliche URL für Redirect nach Login
+        /** State speichert ursprüngliche URL für Redirect nach Login */
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    // Rollen prüfen (falls angegeben)
+    /** Rollen prüfen (falls angegeben) */
     if (requiredRoles.length > 0) {
         const hasRequiredRole = requiredRoles.some((role) => user?.roles.includes(role));
 
         if (!hasRequiredRole) {
-            // Keine Berechtigung -> zur Startseite
+            /** Keine Berechtigung -> zur Startseite */
             return <Navigate to="/" replace />;
         }
     }
 
-    // Zugriff erlaubt
+    /** Zugriff erlaubt */
     return <>{children}</>;
 }
