@@ -3,6 +3,6 @@
  */
 
 export const PAGINATION = {
-    DEFAULT_PAGE_SIZE: 10,
+    DEFAULT_PAGE_SIZE: 5,
     DEFAULT_PAGE: 0,
 } as const;

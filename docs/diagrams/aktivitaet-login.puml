@@ -12,11 +12,17 @@ if (Felder ausgefüllt?) then ([nein])
   :Validierungsfehler anzeigen;
   stop
 else ([ja])
-  :GraphQL Mutation LOGIN senden;
+  :REST Request an Keycloak Token-Endpoint;
+  note right
+    POST /realms/{realm}/protocol/openid-connect/token
+    grant_type=password
+    client_id, username, password
+  end note
   
   if (Credentials korrekt?) then ([ja])
-    :Token in localStorage speichern;
-    :User-Objekt erstellen;
+    :Access-Token und Refresh-Token erhalten;
+    :Tokens in localStorage speichern;
+    :User-Daten aus JWT extrahieren;
     :Weiterleitung zur Startseite;
     
     if (User ist Admin?) then ([ja])
