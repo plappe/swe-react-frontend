@@ -7,11 +7,11 @@
 import { test, expect } from '../fixtures';
 
 test.describe('Create Book Page', () => {
-  test('should redirect non-admin users to home', async ({ page, createBookPage }) => {
+  test('should redirect non-admin users to login', async ({ page, createBookPage }) => {
     await createBookPage.goto();
 
-    /** Sollte zur Startseite umleiten */
-    await page.waitForURL('/', { timeout: 5000 });
+    /** Sollte zur Login-Seite umleiten (nicht eingeloggte Benutzer) */
+    await page.waitForURL('/login', { timeout: 5000 });
   });
 
   /** Admin-Tests werden übersprungen, da keine Auth konfiguriert ist */
